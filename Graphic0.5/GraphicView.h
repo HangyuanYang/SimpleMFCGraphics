@@ -26,6 +26,7 @@ public:
 	UINT m_LineWidth;
 	int	m_LineStyle;
 	COLORREF m_Color;
+	int m_nFILLMODEL;
 // Operations
 public:
 
@@ -68,8 +69,7 @@ protected:
 	afx_msg void OnTransparentbrush();
  	afx_msg void OnColor();
 	afx_msg void OnSetting();
-	afx_msg void OnFileSave();
-	afx_msg void OnFileOpen();
+	afx_msg void OnPaint();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

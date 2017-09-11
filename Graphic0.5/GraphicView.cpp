@@ -35,9 +35,8 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_COMMAND(IDM_TRANSPARENTBRUSH, OnTransparentbrush)
  	ON_COMMAND(IDM_COLOR, OnColor)
 	ON_COMMAND(IDM_SETTING, OnSetting)
-	ON_COMMAND(ID_FILE_SAVE, OnFileSave)
-	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
 	ON_WM_LBUTTONDBLCLK()
+	ON_WM_PAINT()
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -56,6 +55,7 @@ CGraphicView::CGraphicView()
 	m_LineStyle=0;
 	m_LineWidth=1;
 	m_Color=RGB(50,200,100);
+	m_nFILLMODEL=1;
 }
 
 CGraphicView::~CGraphicView()
@@ -145,6 +145,16 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 	CClientDC dc(this);
 	m_bDraw=false;
 
+	CBrush brush;
+	CBrush *pOldBrush;
+	if(m_nFILLMODEL==1){
+	   CBrush *pBrush=CBrush::FromHandle((HBRUSH)GetStockObject(NULL_BRUSH));
+       //将空画刷选入设备描述表
+	    pOldBrush= dc.SelectObject(pBrush);
+	}else{
+		brush.CreateSolidBrush(m_Color);
+		pOldBrush=dc.SelectObject(&brush);
+	}
 	CPen pen(m_LineStyle,m_LineWidth,m_Color);//创建画笔
 	dc.SelectObject(&pen);		//选择画笔
 
@@ -160,9 +170,13 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 		  break;
 	  case 3:/*绘制矩形*/
 		  dc.Rectangle(CRect(m_ptOrigin,point));
+		  //恢复先前的画刷
+		  dc.SelectObject(pOldBrush);
 		  break;
 	  case 4:/*绘制椭圆*/
 		  dc.Ellipse(CRect(m_ptOrigin,point));
+		  //恢复先前的画刷
+		  dc.SelectObject(pOldBrush);
 		  break;
 	}
 	//-_-  case中无法声明变量
@@ -235,9 +249,11 @@ void CGraphicView::OnSetting(){
 	SettingDlg dlg;
 	dlg.m_LineWidth=m_LineWidth;
 	dlg.m_LineStyle=m_LineStyle;
+	dlg.m_nFILLMODEL=m_nFILLMODEL;
 	if(IDOK==dlg.DoModal()){
 		m_LineWidth=dlg.m_LineWidth;
 		m_LineStyle=dlg.m_LineStyle;
+		m_nFILLMODEL=dlg.m_nFILLMODEL;
 	}
 } 
 
@@ -249,91 +265,6 @@ void CGraphicView::OnColor()  {
 	if(IDOK==dlg.DoModal()){
 		m_Color=dlg.m_cc.rgbResult; 
 	}
-}
-
-
-/*
-void CGraphicView::OnInitialUpdate() 
-{
-	CView::OnInitialUpdate();
-	// TODO: Add your specialized code here and/or call the base class
-	SetScrollSizes(MM_TEXT,CSize(1024,768)); 
-}
-*/
-
-
-
-//获取图片CLSID
-static int GetEncoderClsid(const TCHAR* format, CLSID* pClsid)
-{
-    UINT num= 0;
-    UINT size= 0;
-    ImageCodecInfo* pImageCodecInfo= NULL;
-
-    GetImageEncodersSize(&num,&size);
-    if(size== 0)
-    {
-        return -1;
-    }
-
-    pImageCodecInfo= (ImageCodecInfo*)(malloc(size));
-    if(pImageCodecInfo== NULL)
-    {
-        return -1;
-    }
-
-    GetImageEncoders(num, size, pImageCodecInfo);
-
-    for(UINT j=0; j< num; ++j)
-    {
-		//??
-        if(_tcscmp((char*)pImageCodecInfo[j].MimeType,(char*)format)== 0)
-        {
-            *pClsid= pImageCodecInfo[j].Clsid;
-            free(pImageCodecInfo);
-
-            return j;
-        }
-    }
-    free(pImageCodecInfo);
-    return -1;
-}
-
-void CGraphicView::OnFileSave() 
-{
-	
-	// TODO: Add your command handler code here
-	HDC hmemDC = ::CreateCompatibleDC( hdc );  
-	HBITMAP hBmp = ::CreateCompatibleBitmap( hdc, destRect.Width(),destRect.Height() );
-	HANDLE hOld = ::SelectObject(hmemDC, hBmp);
-
-	Graphics graphic( hmemDC );
-	//下面进行各种文字、图形、图片的绘制
-
-	Bitmap bitmap(hBmp, NULL );
-	CLSID clsID;
-	//保存不同格式的(.jpg,bmp,png)的图片需要不同的CLSID, imageFormat为用户期望保存的图片格式
-	if (_T("jpg") == imageFormat.MakeLower() ){
-      GetEncoderClsid(_T("image/jpeg"), &clsID);
-	}else if ( _T("bmp") == imageFormat.MakeLower() ){
-      GetEncoderClsid(_T("image/bmp"), &clsID);
-	}else if ( _T("png") == imageFormat.MakeLower() ){
-     GetEncoderClsid(_T("image/png"), &clsID);
-	}
-
-	//保存为图片，strFN为图片保存的路径和文件名
-	bitmap.Save( strFN, &clsID, NULL );
-	::SelectObject( hmemDC, hOld );
-	::DeleteObject( hBmp );
-	::DeleteDC( hmemDC );
-	
-}
-
-
-void CGraphicView::OnFileOpen() 
-{
-	// TODO: Add your command handler code here
-	
 }
 
 
@@ -396,3 +327,32 @@ void CGraphicView::OnTransparentbrush()
 	m_nDrawType=9;
 }
 
+
+void CGraphicView::OnPaint() 
+{
+	CPaintDC dc(this); // device context for painting
+	
+	// TODO: Add your message handler code here
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc); 
+	
+	//是否已打开某个BMP文件
+	if(pDoc->flagOpen==1)
+	{
+		//这个函数显示DIB
+		SetDIBitsToDevice(dc.m_hDC,  //DIB将输出的设备描述表
+			0,               //设备描述表中位图输出起始逻辑x地址
+			0,               //设备描述表中位图输出起始逻辑x地址 
+			pDoc->bi.biWidth,  //DIB的宽度
+			pDoc->bi.biHeight, //DIB的高度
+			0,                 //DIB开始读取输出的像素数据的x位置
+			0,                 //DIB开始读取输出的像素数据的y位置
+			0,                 //DIB中像素的水平行号,它对应lpBits内存缓冲区第一行数据
+			pDoc->bi.biHeight, //DIB的行数，对应包含在由lpBits所指内存缓冲区中的数据
+			pDoc->lpbuf,       //包含像素数据的内存缓冲区的指针
+			pDoc->pbi,        //指向初始化了的BITMAPINFO数据结构的指针，描述了位图的大小和色彩数据
+			DIB_RGB_COLORS);   //指定是显示的颜色
+	  Invalidate(FALSE);
+	}
+	// Do not call CView::OnPaint() for painting messages
+}

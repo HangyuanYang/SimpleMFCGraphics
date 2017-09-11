@@ -21,6 +21,7 @@ public:
 	enum { IDD = IDD_DLG_SETTING };
 	UINT	m_LineWidth;
 	int		m_LineStyle;
+	int		m_nFILLMODEL;
 	//}}AFX_DATA
 
 
@@ -37,6 +38,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(SettingDlg)
 	afx_msg void OnLineModel();
+	afx_msg void OnFill();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -19,8 +19,8 @@ IMPLEMENT_DYNCREATE(CGraphicDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CGraphicDoc, CDocument)
 	//{{AFX_MSG_MAP(CGraphicDoc)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
+	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+	ON_COMMAND(ID_FILE_SAVE_AS, OnFileSaveAs)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -82,3 +82,88 @@ void CGraphicDoc::Dump(CDumpContext& dc) const
 
 /////////////////////////////////////////////////////////////////////////////
 // CGraphicDoc commands
+
+void CGraphicDoc::OnFileOpen() 
+{
+	// TODO: Add your command handler code here
+	LPCTSTR lpszFilter="BMP Files(*.bmp)|*.bmp|任何文件|*.*||";
+	CFileDialog dlg(TRUE,lpszFilter,NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,lpszFilter,NULL);
+	CString filepath;
+	CFile file;
+
+	//打开文件对话框
+	if(dlg.DoModal()==IDOK){
+		filepath=dlg.GetPathName();
+		if(file.Open(filepath,CFile::modeRead|CFile::shareDenyNone,NULL)==0)
+		{
+			//读取文件失败
+			AfxMessageBox("无法打开文件！",MB_OK,0);
+			return;
+		}
+		//读取文件头
+		file.Read(&bf,sizeof(bf));
+		//判断是否是BMP文件
+		if(bf.bfType!=0x4d42)//'BM'
+		{
+			AfxMessageBox("非BMP文件！",MB_OK,0);
+			return;
+		}
+		//判断文件是否损坏
+		if(file.GetLength()!=bf.bfSize)
+		{
+			AfxMessageBox("文件已损坏，请检查！",MB_OK,0);
+			return;
+		}
+		//读文件信息头
+		file.Read(&bi,sizeof(bi));
+		//计算调色板数目
+		numquad=0;
+		if(bi.biBitCount<24)
+		{
+			numquad=1<<bi.biBitCount;
+		}
+		//为图像信息pbi申请空间
+		pbi=(BITMAPINFO*)HeapAlloc(GetProcessHeap(),0,sizeof(BITMAPINFOHEADER)+numquad*sizeof(RGBQUAD));
+		memcpy(pbi,&bi,sizeof(bi));
+		quad=(RGBQUAD*)((BYTE*)pbi+sizeof(BITMAPINFOHEADER));
+		//读取调色板
+		if(numquad!=0)
+		{
+			file.Read(quad,sizeof(RGBQUAD)*numquad);
+		}
+		//为图像数据申请空间
+		bi.biSizeImage=bf.bfSize-bf.bfOffBits;
+		lpbuf=(BYTE*)HeapAlloc(GetProcessHeap(),0,bi.biSizeImage);
+		//读取图像数据
+		file.Read(lpbuf,bi.biSizeImage);
+		//图像读取完毕，关闭文件，设置标志
+		file.Close();
+		flagOpen=1;
+	}
+}
+
+
+void CGraphicDoc::OnFileSaveAs() 
+{
+	// TODO: Add your command handler code here
+	LPCTSTR lpszFilter="BMP Files(*.bmp)|*.bmp|任何文件|*.*||";
+	CFileDialog  dlg(FALSE,lpszFilter,NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,lpszFilter,NULL);
+	if (dlg.DoModal()!=IDOK)return;
+	CFile file;
+	CFileException fe;
+	if (!file.Open(dlg.GetPathName(),CFile::modeCreate | CFile::modeReadWrite | CFile::shareExclusive, &fe))
+	{
+		// 失败
+		ReportSaveLoadException(dlg.GetPathName(), &fe, TRUE, AFX_IDP_INVALID_FILENAME);
+		return;
+	}
+	file.SeekToBegin();
+	file.Write(&bf,sizeof(bf));
+	file.Write(&bi,sizeof(bi));
+	if(numquad!=0)
+	{
+		file.Write(quad,sizeof(RGBQUAD)*numquad);
+	}
+	file.WriteHuge(lpbuf,bi.biSizeImage);
+	file.Close(); 
+}

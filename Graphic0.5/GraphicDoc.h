@@ -18,7 +18,14 @@ protected: // create from serialization only
 
 // Attributes
 public:
-
+	//用于打开位图文件：
+	int numquad; //调色板数
+	int flagOpen;//标志是否打开bmp
+	BITMAPINFO* pbi;  //记录图像细节
+	BYTE* lpbuf;  //图像数据
+	RGBQUAD* quad;  //调色板
+	BITMAPFILEHEADER bf;//文件头
+	BITMAPINFOHEADER bi;  //信息头 
 // Operations
 public:
 
@@ -43,8 +50,8 @@ protected:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CGraphicDoc)
-		// NOTE - the ClassWizard will add and remove member functions here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
+	afx_msg void OnFileOpen();
+	afx_msg void OnFileSaveAs();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

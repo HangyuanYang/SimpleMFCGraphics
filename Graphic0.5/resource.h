@@ -11,6 +11,8 @@
 #define IDC_LINEMODEL1                  1002
 #define IDC_LINEMODEL2                  1003
 #define IDC_LINEMODEL3                  1004
+#define IDC_FILL1                       1006
+#define IDC_FILL2                       1007
 #define IDM_LINE                        32771
 #define IDM_ELLIPSE                     32773
 #define IDM_DOT                         32774
@@ -30,7 +32,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_CONTROL_VALUE         1008
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CGraphicView
+LastClass=SettingDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
@@ -15,9 +15,9 @@ Class3=CGraphicView
 Class4=CMainFrame
 
 ResourceCount=3
-Resource1=IDR_MAINFRAME
+Resource1=IDD_ABOUTBOX
 Class5=CAboutDlg
-Resource2=IDD_ABOUTBOX
+Resource2=IDR_MAINFRAME
 Class6=SettingDlg
 Resource3=IDD_DLG_SETTING
 
@@ -32,6 +32,9 @@ Type=0
 HeaderFile=GraphicDoc.h
 ImplementationFile=GraphicDoc.cpp
 Filter=N
+BaseClass=CDocument
+VirtualFilter=DC
+LastObject=CGraphicDoc
 
 [CLS:CGraphicView]
 Type=0
@@ -40,7 +43,7 @@ ImplementationFile=GraphicView.cpp
 Filter=C
 BaseClass=CView
 VirtualFilter=VWC
-LastObject=IDM_TRANSPARENTBRUSH
+LastObject=CGraphicView
 
 
 [CLS:CMainFrame]
@@ -48,7 +51,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_FILE_SAVE
+LastObject=ID_FILE_SAVE_AS
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -138,7 +141,7 @@ CommandCount=8
 [DLG:IDD_DLG_SETTING]
 Type=1
 Class=SettingDlg
-ControlCount=8
+ControlCount=11
 Control1=IDC_LINEWIDTH,edit,1350639745
 Control2=IDC_STATIC,static,1342308352
 Control3=IDC_STATIC,button,1342177287
@@ -147,6 +150,9 @@ Control5=IDC_LINEMODEL2,button,1342242825
 Control6=IDC_LINEMODEL3,button,1342242825
 Control7=IDOK,button,1342242817
 Control8=IDCANCEL,button,1342242816
+Control9=IDC_FILL1,button,1342373897
+Control10=IDC_FILL2,button,1342242825
+Control11=IDC_STATIC,button,1342177287
 
 [CLS:SettingDlg]
 Type=0
@@ -155,5 +161,5 @@ ImplementationFile=SettingDlg.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=IDC_RADIO1
+LastObject=IDC_FILL1
 

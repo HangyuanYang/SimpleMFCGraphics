@@ -70,6 +70,8 @@ protected:
  	afx_msg void OnColor();
 	afx_msg void OnSetting();
 	afx_msg void OnPaint();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnErase();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

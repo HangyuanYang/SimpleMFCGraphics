@@ -35,8 +35,10 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_COMMAND(IDM_TRANSPARENTBRUSH, OnTransparentbrush)
  	ON_COMMAND(IDM_COLOR, OnColor)
 	ON_COMMAND(IDM_SETTING, OnSetting)
-	ON_WM_LBUTTONDBLCLK()
 	ON_WM_PAINT()
+	ON_WM_ERASEBKGND()
+	ON_WM_LBUTTONDBLCLK()
+	ON_COMMAND(ID_ERASE, OnErase)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -66,6 +68,8 @@ BOOL CGraphicView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
+	// 固定鼠标指针样式在MoveMouse时不变
+    cs.lpszClass = AfxRegisterWndClass(CS_DBLCLKS,NULL,(HBRUSH)GetStockObject(WHITE_BRUSH),NULL);
 
 	return CView::PreCreateWindow(cs);
 }
@@ -79,10 +83,34 @@ void CGraphicView::OnDraw(CDC* pDC)
 	ASSERT_VALID(pDoc);
 	// TODO: add draw code for native data here
 
+//双缓冲实现技术
+/*C++ code*/
+//	RECT rc;
+//	GetClientRect(&rc);
+//	Bitmap bmp(int(rc.right),int(rc.bottom));
+
+//	Graphics bmpGraphics(&bmp);
+//	bmpGraphics.SetSmoothingMode(SmoothingModeAntiAlias);
+
+/*Drawing on bitmap*/
+//	SolidBrush bkBrush(Color(0,0,0));
+//	bmpGraphics.FillRectangle(&bkBrush,0,0,rc.right,rc.bottom);
+
+/*Drawing on DC*/
+//	Graphics graphics(pDC->m_hDC);
+/*Important! Create a CacheBitmap object for quick drawing*/
+//	CachedBitmap cachedBmp(&bmp,&graphics);
+//	graphics.DrawCachedBitmap(&cachedBmp,0,0);
+
+
+
+
+
+
   //GDI+使用尝试
-	Graphics graphics(pDC->m_hDC);
-	Pen pen(Color(255, 0, 255));
-	graphics.DrawLine(&pen, 0, 0, 200, 100);
+//	Graphics graphics(pDC->m_hDC);
+//	Pen pen(Color(255, 0, 255));
+//	graphics.DrawLine(&pen, 0, 0, 200, 100);
 
 }
 
@@ -135,6 +163,23 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	m_ptOrigin=point;
 	m_bDraw=true;
+
+
+	//改变鼠标指针形状
+	HCURSOR hCur;
+	switch(m_nDrawType){
+	case 3://矩形
+    case 4://椭圆
+		hCur=LoadCursor(NULL,IDC_CROSS);
+		::SetCursor(hCur);
+		break;
+	case 10://橡皮擦
+		hCur=LoadCursor(NULL,IDC_NO);
+		::SetCursor(hCur);
+	    break;
+	}
+
+
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -144,6 +189,10 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 	//创建并获得设备描述
 	CClientDC dc(this);
 	m_bDraw=false;
+
+	//恢复鼠标指针形状
+	HCURSOR hCur=LoadCursor(NULL,IDC_ARROW);
+    ::SetCursor(hCur);
 
 	CBrush brush;
 	CBrush *pOldBrush;
@@ -179,31 +228,35 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 		  dc.SelectObject(pOldBrush);
 		  break;
 	}
+
 	//-_-  case中无法声明变量
 	if(m_nDrawType==7){
+		//Simplebrush
 		CBrush brush(m_Color);
 	    //利用画刷填充鼠标拖曳过程中形成的矩形区域 
         dc.FillRect(CRect(m_ptOrigin,point),&brush);
 	}
 	if(m_nDrawType==8){
-		  //创建位图对象
-		  CBitmap bitmap;
-		  //加载位图资源
-		  bitmap.LoadBitmap(IDB_BITMAP1);
-		  //创建位图画刷
-		  CBrush brush(&bitmap);
-		  //利用红色画刷填充鼠标拖曳过程中形成的矩形区域
-		  dc.FillRect(CRect(m_ptOrigin,point),&brush);
+		//Bitmapbrush
+		//创建位图对象
+		CBitmap bitmap;
+		//加载位图资源
+		bitmap.LoadBitmap(IDB_BITMAP1);
+		//创建位图画刷
+		CBrush brush(&bitmap);
+		//利用红色画刷填充鼠标拖曳过程中形成的矩形区域
+		dc.FillRect(CRect(m_ptOrigin,point),&brush);
 	}
 	if(m_nDrawType==9){
-		  //创建一个空画刷
-		  CBrush *pBrush=CBrush::FromHandle((HBRUSH)GetStockObject(NULL_BRUSH));
-		  //将空画刷选入设备描述表
-		  CBrush *pOldBrush = dc.SelectObject(pBrush);
-		  //绘制一个矩形
-		  dc.Rectangle(CRect(m_ptOrigin,point));
-		  //恢复先前的画刷
-		  dc.SelectObject(pOldBrush);
+		//Transparentbrush
+		//创建一个空画刷
+		CBrush *pBrush=CBrush::FromHandle((HBRUSH)GetStockObject(NULL_BRUSH));
+		//将空画刷选入设备描述表
+		CBrush *pOldBrush = dc.SelectObject(pBrush);
+		//绘制一个矩形
+		dc.Rectangle(CRect(m_ptOrigin,point));
+		//恢复先前的画刷
+		dc.SelectObject(pOldBrush);
 	}
 //??
 	OnPrepareDC(&dc);
@@ -225,15 +278,25 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 
 	if(m_bDraw==true)
 		switch(m_nDrawType){
-			case 5:
+			case 5://SECTOR
 				dc.MoveTo(m_ptOrigin);                  
 				dc.LineTo(point);
 				break;
-			case 6:
+			case 6://Polyline
 				dc.MoveTo(m_ptOrigin);                  
 				dc.LineTo(point);
 				//修改线段的起点        
 				m_ptOrigin=point;
+				break;
+			case 10://erase
+				CBrush brush(RGB(255,255,255));
+				CPoint pt1;
+				CPoint pt2;
+				pt1.x=point.x-10;
+				pt1.y=point.y-10;
+				pt2.x=point.x+10;
+				pt2.y=point.y+10;
+				dc.FillRect(CRect(pt1,pt2),&brush);
 				break;
 		}
 	//恢复设备描述
@@ -267,6 +330,51 @@ void CGraphicView::OnColor()  {
 	}
 }
 
+void CGraphicView::OnPaint() 
+{
+
+	CPaintDC dc(this); // device context for painting
+	// TODO: Add your message handler code here
+
+
+///////////////////////////////////////////////////////////////////////////////
+//加载图片
+
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc); 
+	
+	//是否已打开某个BMP文件
+	if(pDoc->flagOpen==1)
+	{
+		//这个函数显示DIB
+		SetDIBitsToDevice(dc.m_hDC,  //DIB将输出的设备描述表
+			0,               //设备描述表中位图输出起始逻辑x地址
+			0,               //设备描述表中位图输出起始逻辑x地址 
+			pDoc->bi.biWidth,  //DIB的宽度
+			pDoc->bi.biHeight, //DIB的高度
+			0,                 //DIB开始读取输出的像素数据的x位置
+			0,                 //DIB开始读取输出的像素数据的y位置
+			0,                 //DIB中像素的水平行号,它对应lpBits内存缓冲区第一行数据
+			pDoc->bi.biHeight, //DIB的行数，对应包含在由lpBits所指内存缓冲区中的数据
+			pDoc->lpbuf,       //包含像素数据的内存缓冲区的指针
+			pDoc->pbi,        //指向初始化了的BITMAPINFO数据结构的指针，描述了位图的大小和色彩数据
+			DIB_RGB_COLORS);   //指定是显示的颜色
+	  Invalidate(false);
+	  return;
+	}
+	// Do not call CView::OnPaint() for painting messages
+	//WRONG!!
+	Invalidate(true);
+}
+
+BOOL CGraphicView::OnEraseBkgnd(CDC* pDC) 
+{
+	// TODO: Add your message handler code here and/or call default
+	
+	// nothing
+	// return CView::OnEraseBkgnd(pDC);
+	return true;
+}
 
 ///////////////////////////////////////////
 
@@ -327,32 +435,8 @@ void CGraphicView::OnTransparentbrush()
 	m_nDrawType=9;
 }
 
-
-void CGraphicView::OnPaint() 
+void CGraphicView::OnErase() 
 {
-	CPaintDC dc(this); // device context for painting
-	
-	// TODO: Add your message handler code here
-	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
-	ASSERT_VALID(pDoc); 
-	
-	//是否已打开某个BMP文件
-	if(pDoc->flagOpen==1)
-	{
-		//这个函数显示DIB
-		SetDIBitsToDevice(dc.m_hDC,  //DIB将输出的设备描述表
-			0,               //设备描述表中位图输出起始逻辑x地址
-			0,               //设备描述表中位图输出起始逻辑x地址 
-			pDoc->bi.biWidth,  //DIB的宽度
-			pDoc->bi.biHeight, //DIB的高度
-			0,                 //DIB开始读取输出的像素数据的x位置
-			0,                 //DIB开始读取输出的像素数据的y位置
-			0,                 //DIB中像素的水平行号,它对应lpBits内存缓冲区第一行数据
-			pDoc->bi.biHeight, //DIB的行数，对应包含在由lpBits所指内存缓冲区中的数据
-			pDoc->lpbuf,       //包含像素数据的内存缓冲区的指针
-			pDoc->pbi,        //指向初始化了的BITMAPINFO数据结构的指针，描述了位图的大小和色彩数据
-			DIB_RGB_COLORS);   //指定是显示的颜色
-	  Invalidate(FALSE);
-	}
-	// Do not call CView::OnPaint() for painting messages
+	// TODO: Add your command handler code here
+	m_nDrawType=10;
 }

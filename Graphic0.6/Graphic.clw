@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=SettingDlg
+LastClass=CGraphicView
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
@@ -15,9 +15,9 @@ Class3=CGraphicView
 Class4=CMainFrame
 
 ResourceCount=3
-Resource1=IDD_ABOUTBOX
+Resource1=IDR_MAINFRAME
 Class5=CAboutDlg
-Resource2=IDR_MAINFRAME
+Resource2=IDD_ABOUTBOX
 Class6=SettingDlg
 Resource3=IDD_DLG_SETTING
 
@@ -51,7 +51,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_FILE_SAVE_AS
+LastObject=ID_FILE_NEW
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -104,7 +104,8 @@ Command24=IDM_Polyline
 Command25=IDM_SIMPLEBRUSH
 Command26=IDM_BITMAPBRUSH
 Command27=IDM_TRANSPARENTBRUSH
-CommandCount=27
+Command28=ID_ERASE
+CommandCount=28
 
 [ACL:IDR_MAINFRAME]
 Type=1

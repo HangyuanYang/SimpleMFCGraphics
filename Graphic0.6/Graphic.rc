@@ -140,7 +140,7 @@ BEGIN
     BEGIN
         MENUITEM "关于 Graphic(&A)...",         ID_APP_ABOUT
     END
-    POPUP "画图"
+    POPUP "绘图"
     BEGIN
         MENUITEM "点",                          IDM_DOT
         MENUITEM "直线",                        IDM_LINE
@@ -154,6 +154,10 @@ BEGIN
         MENUITEM "简单画刷",                    IDM_SIMPLEBRUSH
         MENUITEM "位图画刷",                    IDM_BITMAPBRUSH
         MENUITEM "透明画刷",                    IDM_TRANSPARENTBRUSH
+    END
+    POPUP "工具"
+    BEGIN
+        MENUITEM "橡皮擦",                      ID_ERASE
     END
 END
 
@@ -201,7 +205,7 @@ END
 IDD_DLG_SETTING DIALOGEX 0, 0, 187, 121
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Setting"
-FONT 12, "楷体"
+FONT 12, "楷体", 0, 0, 0x1
 BEGIN
     EDITTEXT        IDC_LINEWIDTH,39,14,25,12,ES_CENTER | ES_AUTOHSCROLL | 
                     ES_NUMBER,WS_EX_STATICEDGE

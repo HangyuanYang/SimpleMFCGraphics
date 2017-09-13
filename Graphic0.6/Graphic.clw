@@ -15,9 +15,9 @@ Class3=CGraphicView
 Class4=CMainFrame
 
 ResourceCount=3
-Resource1=IDR_MAINFRAME
+Resource1=IDD_ABOUTBOX
 Class5=CAboutDlg
-Resource2=IDD_ABOUTBOX
+Resource2=IDR_MAINFRAME
 Class6=SettingDlg
 Resource3=IDD_DLG_SETTING
 

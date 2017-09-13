@@ -168,8 +168,11 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
 	//改变鼠标指针形状
 	HCURSOR hCur;
 	switch(m_nDrawType){
+	case 1://点
+	case 2://直线
 	case 3://矩形
     case 4://椭圆
+    case 5://扇形
 		hCur=LoadCursor(NULL,IDC_CROSS);
 		::SetCursor(hCur);
 		break;
@@ -196,6 +199,8 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 
 	CBrush brush;
 	CBrush *pOldBrush;
+
+	//实心/空心
 	if(m_nFILLMODEL==1){
 	   CBrush *pBrush=CBrush::FromHandle((HBRUSH)GetStockObject(NULL_BRUSH));
        //将空画刷选入设备描述表
@@ -204,8 +209,19 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 		brush.CreateSolidBrush(m_Color);
 		pOldBrush=dc.SelectObject(&brush);
 	}
-	CPen pen(m_LineStyle,m_LineWidth,m_Color);//创建画笔
-	dc.SelectObject(&pen);		//选择画笔
+
+	
+    //画出线宽大于1的实线/虚线/点线
+	LOGBRUSH logBrush;  
+	logBrush.lbStyle = BS_SOLID;  
+	logBrush.lbColor = m_Color;  
+	CPen pen1(m_LineStyle,m_LineWidth,m_Color);//创建画笔
+	CPen pen2(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
+	CPen pen3(PS_DOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
+	dc.SelectObject(&pen1);
+	if(m_LineStyle==1)dc.SelectObject(&pen2);		//选择画笔
+	else  if(m_LineStyle!=0)dc.SelectObject(&pen3);		//选择画笔
+	
 
 	switch (m_nDrawType){
 	  case 1:/*绘制点*/ 
@@ -271,10 +287,17 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 	//创建并获得设备描述
 	CClientDC dc(this);
-	//创建画笔
-	CPen pen (m_LineStyle,m_LineWidth, m_Color);
-	//把创建的画笔选入设备描述
-	CPen *pOldpen=dc.SelectObject(&pen);
+
+    //画出线宽大于1的实线/虚线/点线
+	LOGBRUSH logBrush;  
+	logBrush.lbStyle = BS_SOLID;  
+	logBrush.lbColor = m_Color;  
+	CPen pen1(m_LineStyle,m_LineWidth,m_Color);//创建画笔
+	CPen pen2(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
+	CPen pen3(PS_DOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
+	dc.SelectObject(&pen1);
+	if(m_LineStyle==1)dc.SelectObject(&pen2);		//选择画笔
+	else  if(m_LineStyle!=0)dc.SelectObject(&pen3);		//选择画笔
 
 	if(m_bDraw==true)
 		switch(m_nDrawType){
@@ -300,8 +323,6 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 				break;
 		}
 	//恢复设备描述
-	dc.SelectObject(pOldpen);
-
 
 	CView::OnMouseMove(nFlags, point);
 }
@@ -364,7 +385,7 @@ void CGraphicView::OnPaint()
 	}
 	// Do not call CView::OnPaint() for painting messages
 	//WRONG!!
-	Invalidate(true);
+	//Invalidate(true);
 }
 
 BOOL CGraphicView::OnEraseBkgnd(CDC* pDC) 

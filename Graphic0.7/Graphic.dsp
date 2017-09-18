@@ -111,6 +111,10 @@ SOURCE=.\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\RotateDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SettingDlg.cpp
 # End Source File
 # Begin Source File
@@ -141,6 +145,10 @@ SOURCE=.\MainFrm.h
 # Begin Source File
 
 SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\RotateDlg.h
 # End Source File
 # Begin Source File
 

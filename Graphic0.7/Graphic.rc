@@ -164,7 +164,8 @@ BEGIN
     BEGIN
         MENUITEM "导入",                        ID_IMPORTSAMPLE
         MENUITEM "旋转",                        ID_ROTATE
-        MENUITEM "灰度",                        ID_GRAY
+        MENUITEM "平移",                        ID_TRANSLATE
+        MENUITEM "灰化",                        ID_GRAY
     END
 END
 
@@ -233,6 +234,23 @@ BEGIN
     GROUPBOX        "图形填充",IDC_STATIC,125,41,48,49
 END
 
+IDD_DLG_ROTATE DIALOG DISCARDABLE  0, 0, 187, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 10, "System"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,89,75,39,14
+    PUSHBUTTON      "Cancel",IDCANCEL,139,75,41,14
+    CTEXT           "旋转角度：",IDC_STATIC,25,25,41,8,SS_CENTERIMAGE
+    CTEXT           "旋转方向：",IDC_STATIC,25,53,41,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_ROTATEANGLE,84,24,66,11,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "顺时针",IDC_ROTATEMODEL1,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,78,53,40,10
+    CONTROL         "逆时针",IDC_ROTATEMODEL2,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,123,53,40,10
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -299,6 +317,14 @@ BEGIN
         RIGHTMARGIN, 180
         TOPMARGIN, 7
         BOTTOMMARGIN, 114
+    END
+
+    IDD_DLG_ROTATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 89
     END
 END
 #endif    // APSTUDIO_INVOKED

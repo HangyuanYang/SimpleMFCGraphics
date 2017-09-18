@@ -7,6 +7,7 @@
 #include "GraphicDoc.h"
 #include "GraphicView.h"
 #include "SettingDlg.h"
+#include "RotateDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,6 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 #endif
 
+	using namespace Gdiplus;
 /////////////////////////////////////////////////////////////////////////////
 // CGraphicView
 
@@ -63,6 +65,10 @@ CGraphicView::CGraphicView()
 	m_LineWidth=1;
 	m_Color=RGB(50,200,100);
 	m_nFILLMODEL=1;
+	m_nAngle = 0;
+	m_nRotateModel = 0;
+	imagePointX = 0;
+	imagePointY = 0;
 }
 
 CGraphicView::~CGraphicView()
@@ -405,61 +411,79 @@ BOOL CGraphicView::OnEraseBkgnd(CDC* pDC)
 void CGraphicView::OnImportsample() 
 {
 	// TODO: Add your command handler code here
-	using namespace Gdiplus;
+	
 	CDC *pDC=GetDC();
 	Graphics graphics(pDC->GetSafeHdc());
-	Image image(L"E:\\study\\东南大学\\学科作业\\MFC\\Graphic\\Graphic0.6\\res\\lena.bmp");
-
+	Image image(L"res\\lena.bmp");
 	CRect rect;
 	this->GetClientRect(&rect);
 	pDC->FillSolidRect(&rect,RGB(255,255,255));
-	graphics.DrawImage(&image, 50, 50);
-	rotatecount=0;
+	graphics.DrawImage(&image, imagePointX, imagePointX);
+
+
+	//initial
+	m_nRotateModel=0;
+	m_nAngle=0;
+	imagePointX=0;
+	imagePointY=0;
 }
 
 void CGraphicView::OnRotate() 
 {
 	// TODO: Add your command handler code here
-	using namespace Gdiplus;
-	rotatecount++;
+	CRotateDlg dlg;
+	dlg.m_nRotateModel=m_nRotateModel;
+	dlg.m_nAngle=m_nAngle;
+	if(IDOK==dlg.DoModal()){
+		m_nRotateModel+=dlg.m_nRotateModel;
+		m_nAngle+=dlg.m_nAngle;
+	}
+
 	CDC *pDC=GetDC();
 	Graphics graphics(pDC->GetSafeHdc());
-	Image image(L"E:\\study\\东南大学\\学科作业\\MFC\\Graphic\\Graphic0.6\\res\\lena.bmp");
-	graphics.TranslateTransform(150,150); //源点移动到旋转中心
-	graphics.RotateTransform(30.0f*rotatecount); //旋转
-	graphics.TranslateTransform(-150, -150);//还原源点
+	Image image(L"res\\lena.bmp");
+	graphics.TranslateTransform(1.0f*(imagePointX+100),1.0f*(imagePointY+100)); //源点移动到旋转中心
+	
+	
+	//旋转
+	if(!m_nRotateModel)graphics.RotateTransform(1.0f*m_nAngle); 
+	else graphics.RotateTransform(1.0f*(1080-m_nAngle)); 
+
+	graphics.TranslateTransform(1.0f*(0-(imagePointX+100)), 1.0f*(0-(imagePointY+100)));//还原源点
 
     CRect rect;
 	this->GetClientRect(&rect);
 	pDC->FillSolidRect(&rect,RGB(255,255,255));
     //在某个起点显示图像
-    graphics.DrawImage(&image, 50, 50);
+    graphics.DrawImage(&image, imagePointX, imagePointY);
 }
 
 
 void CGraphicView::OnGray() 
 {
 	// TODO: Add your command handler code here
-	using namespace Gdiplus;
 	CDC *pDC=GetDC();
+	Graphics graphics(pDC->GetSafeHdc());
+	Image image(L"res\\lena.bmp");
 	CRect rect;
 	this->GetClientRect(&rect);
 	pDC->FillSolidRect(&rect,RGB(255,255,255));
-	Graphics graphics(pDC->GetSafeHdc());
-	Image image(L"E:\\study\\东南大学\\学科作业\\MFC\\Graphic\\Graphic0.6\\res\\lena.bmp");
+
 	ColorMatrix colorMatrix=
 	{
-		0.298f,0.298f,0.298f,0,0,
-		0.586f,0.586f,0.586f,0,0,
-		0.113f,0.113f,0.113f,0,0,
+		0.299f,0.299f,0.299f,0,0,
+		0.587f,0.587f,0.587f,0,0,
+		0.114f,0.114f,0.114f,0,0,
 		0,0,0,1,0,
 		0,0,0,0,1
 	};
+
 	ImageAttributes attr;
 	attr.SetColorMatrix(&colorMatrix);
-	Graphics g(pDC->GetSafeHdc());
-	Rect destRect(50,50,image.GetWidth(),image.GetHeight());
-	g.DrawImage(&image, destRect, 0,0,image.GetWidth(),image.GetHeight(),UnitPixel,&attr);
+
+	Rect destRect(imagePointX,imagePointX,image.GetWidth(),image.GetHeight());
+	graphics.DrawImage(&image, destRect, 0,0,image.GetWidth(),image.GetHeight(),UnitPixel,&attr);
+	
 }
 
 ///////////////////////////////////////////

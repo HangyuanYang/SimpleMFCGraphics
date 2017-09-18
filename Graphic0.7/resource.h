@@ -7,12 +7,16 @@
 #define IDR_GRAPHITYPE                  129
 #define IDB_BITMAP1                     130
 #define IDD_DLG_SETTING                 131
+#define IDD_DLG_ROTATE                  137
 #define IDC_LINEWIDTH                   1000
 #define IDC_LINEMODEL1                  1002
 #define IDC_LINEMODEL2                  1003
 #define IDC_LINEMODEL3                  1004
 #define IDC_FILL1                       1006
 #define IDC_FILL2                       1007
+#define IDC_ROTATEANGLE                 1009
+#define IDC_ROTATEMODEL1                1010
+#define IDC_ROTATEMODEL2                1011
 #define IDM_LINE                        32771
 #define IDM_ELLIPSE                     32773
 #define IDM_DOT                         32774
@@ -29,15 +33,16 @@
 #define ID_ROTATE                       32785
 #define ID_IMPORTSAMPLE                 32786
 #define ID_GRAY                         32787
+#define ID_TRANSLATE                    32788
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        137
-#define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1008
+#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_COMMAND_VALUE         32789
+#define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

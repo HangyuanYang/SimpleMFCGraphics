@@ -8,18 +8,20 @@ NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
 LastPage=0
 
-ClassCount=6
+ClassCount=7
 Class1=CGraphicApp
 Class2=CGraphicDoc
 Class3=CGraphicView
 Class4=CMainFrame
 
-ResourceCount=3
-Resource1=IDR_MAINFRAME
+ResourceCount=4
+Resource1=IDD_DLG_ROTATE
 Class5=CAboutDlg
-Resource2=IDD_ABOUTBOX
+Resource2=IDD_DLG_SETTING
 Class6=SettingDlg
-Resource3=IDD_DLG_SETTING
+Resource3=IDD_ABOUTBOX
+Class7=CRotateDlg
+Resource4=IDR_MAINFRAME
 
 [CLS:CGraphicApp]
 Type=0
@@ -108,8 +110,9 @@ Command28=ID_ERASE
 Command29=ID_FILLAREA
 Command30=ID_IMPORTSAMPLE
 Command31=ID_ROTATE
-Command32=ID_GRAY
-CommandCount=32
+Command32=ID_TRANSLATE
+Command33=ID_GRAY
+CommandCount=33
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -167,4 +170,25 @@ BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
 LastObject=IDC_FILL1
+
+[DLG:IDD_DLG_ROTATE]
+Type=1
+Class=CRotateDlg
+ControlCount=7
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,static,1342308865
+Control4=IDC_STATIC,static,1342308865
+Control5=IDC_ROTATEANGLE,edit,1350639745
+Control6=IDC_ROTATEMODEL1,button,1342373897
+Control7=IDC_ROTATEMODEL2,button,1342242825
+
+[CLS:CRotateDlg]
+Type=0
+HeaderFile=RotateDlg.h
+ImplementationFile=RotateDlg.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=IDC_ROTATEMODEL1
+VirtualFilter=dWC
 

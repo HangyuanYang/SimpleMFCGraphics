@@ -33,7 +33,10 @@ public:
 	int	m_LineStyle;
 	COLORREF m_Color;
 	int m_nFILLMODEL;
-	int rotatecount;
+	int m_nAngle;
+	int m_nRotateModel;
+	int imagePointX;
+	int imagePointY;
 // Operations
 public:
 	void FillAreaqaq(CPoint,COLORREF);

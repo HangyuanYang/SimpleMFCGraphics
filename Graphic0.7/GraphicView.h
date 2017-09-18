@@ -86,6 +86,8 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg void OnImportsample();
 	afx_msg void OnGray();
+	afx_msg void OnAll();
+	afx_msg void OnZoom();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

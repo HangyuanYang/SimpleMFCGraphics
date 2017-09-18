@@ -163,6 +163,8 @@ BEGIN
     POPUP "几何变换"
     BEGIN
         MENUITEM "导入",                        ID_IMPORTSAMPLE
+        MENUITEM "平铺",                        ID_ALL
+        MENUITEM "缩放",                        ID_ZOOM
         MENUITEM "旋转",                        ID_ROTATE
         MENUITEM "平移",                        ID_TRANSLATE
         MENUITEM "灰化",                        ID_GRAY
@@ -213,25 +215,29 @@ END
 IDD_DLG_SETTING DIALOGEX 0, 0, 187, 121
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Setting"
-FONT 12, "楷体", 0, 0, 0x1
+FONT 12, "楷体"
 BEGIN
-    EDITTEXT        IDC_LINEWIDTH,39,14,25,12,ES_CENTER | ES_AUTOHSCROLL | 
-                    ES_NUMBER,WS_EX_STATICEDGE
     LTEXT           "线宽",IDC_STATIC,16,15,19,13
-    GROUPBOX        "线型",IDC_STATIC,16,34,47,58
+    EDITTEXT        IDC_LINEWIDTH,39,14,38,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER,WS_EX_STATICEDGE
+    GROUPBOX        "线型",IDC_STATIC,18,28,60,80
     CONTROL         "实线",IDC_LINEMODEL1,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,24,47,32,10
+                    WS_GROUP | WS_TABSTOP,23,41,32,10
     CONTROL         "虚线",IDC_LINEMODEL2,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,24,59,32,10
+                    WS_TABSTOP,23,53,32,10
     CONTROL         "点线",IDC_LINEMODEL3,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,24,71,32,10
-    DEFPUSHBUTTON   "OK",IDOK,110,94,27,14
-    PUSHBUTTON      "Cancel",IDCANCEL,145,94,29,14
+                    WS_TABSTOP,23,65,32,10
+    CONTROL         "点划线",IDC_LINEMODEL4,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,23,77,38,10
+    CONTROL         "双点划线",IDC_LINEMODEL5,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,23,89,48,9
+    GROUPBOX        "图形填充",IDC_STATIC,125,41,48,49
     CONTROL         "实心",IDC_FILL1,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
                     WS_TABSTOP,131,53,34,10
     CONTROL         "空心",IDC_FILL2,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,131,70,35,11
-    GROUPBOX        "图形填充",IDC_STATIC,125,41,48,49
+    DEFPUSHBUTTON   "OK",IDOK,110,94,27,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,94,29,14
 END
 
 IDD_DLG_ROTATE DIALOG DISCARDABLE  0, 0, 187, 96

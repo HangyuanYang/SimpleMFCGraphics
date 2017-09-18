@@ -44,8 +44,10 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_COMMAND(ID_ROTATE, OnRotate)
 	ON_WM_PAINT()
 	ON_COMMAND(ID_IMPORTSAMPLE, OnImportsample)
-	ON_WM_LBUTTONDBLCLK()
 	ON_COMMAND(ID_GRAY, OnGray)
+	ON_COMMAND(ID_ALL, OnAll)
+	ON_WM_LBUTTONDBLCLK()
+	ON_COMMAND(ID_ZOOM, OnZoom)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -67,8 +69,8 @@ CGraphicView::CGraphicView()
 	m_nFILLMODEL=1;
 	m_nAngle = 0;
 	m_nRotateModel = 0;
-	imagePointX = 0;
-	imagePointY = 0;
+	imagePointX = 100;
+	imagePointY = 100;
 }
 
 CGraphicView::~CGraphicView()
@@ -184,8 +186,6 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
 	//获取当前点的RGB值
 	COLORREF clr=::GetPixel(hDC, point.x, point.y); 
 	Gdiplus::Graphics graphics(hDC);
-	Pen pen(Color(255, 255, 0, 0));
-
 
 	//改变鼠标指针形状
 	HCURSOR hCur;
@@ -262,12 +262,21 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 	LOGBRUSH logBrush;  
 	logBrush.lbStyle = BS_SOLID;  
 	logBrush.lbColor = m_Color;  
-	CPen pen1(m_LineStyle,m_LineWidth,m_Color);//创建画笔
-	CPen pen2(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
-	CPen pen3(PS_DOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
+	//创建实线画笔
+	CPen pen1(m_LineStyle,m_LineWidth,m_Color);
+	//创建虚线画笔
+	CPen pen2(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
+	//创建点线画笔
+	CPen pen3(PS_DOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
+	//创建点划线画笔
+	CPen pen4(PS_DASHDOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
+	//创建双点划线画笔
+	CPen pen5(PS_DASHDOTDOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
 	dc.SelectObject(&pen1);
 	if(m_LineStyle==1)dc.SelectObject(&pen2);		//选择画笔
-	else  if(m_LineStyle!=0)dc.SelectObject(&pen3);		//选择画笔
+	else if(m_LineStyle==2)dc.SelectObject(&pen3);
+	else if(m_LineStyle==3)dc.SelectObject(&pen4);
+	else if(m_LineStyle!=0)dc.SelectObject(&pen5);		//选择画笔
 	
 
 	switch (m_nDrawType){
@@ -424,8 +433,43 @@ void CGraphicView::OnImportsample()
 	//initial
 	m_nRotateModel=0;
 	m_nAngle=0;
-	imagePointX=0;
-	imagePointY=0;
+	imagePointX=100;
+	imagePointY=100;
+
+
+
+
+	ReleaseDC(pDC);
+}
+
+
+void CGraphicView::OnAll() 
+{
+	// TODO: Add your command handler code here
+	CDC* pDC = GetDC();
+	Graphics graph(pDC->GetSafeHdc());
+	Image image(L"res\\lena.bmp");
+	CRect rect;
+	GetClientRect(rect);  // 获得窗口绘制区的大小
+	graph.DrawImage(&image, 0, 0, rect.Width(),rect.Height()); // 绘制图像
+
+
+
+	ReleaseDC(pDC);
+}
+
+void CGraphicView::OnZoom() 
+{
+	// TODO: Add your command handler code here
+	CDC* pDC = GetDC();
+	Graphics graph(pDC->GetSafeHdc());
+	Image image(L"res\\lena.bmp");
+	graph.DrawImage(&image, imagePointX,imagePointY,image.GetWidth(),image.GetHeight()); // 绘制图像
+
+
+
+
+	ReleaseDC(pDC);
 }
 
 void CGraphicView::OnRotate() 
@@ -456,6 +500,11 @@ void CGraphicView::OnRotate()
 	pDC->FillSolidRect(&rect,RGB(255,255,255));
     //在某个起点显示图像
     graphics.DrawImage(&image, imagePointX, imagePointY);
+
+
+
+
+	ReleaseDC(pDC);
 }
 
 
@@ -484,6 +533,9 @@ void CGraphicView::OnGray()
 	Rect destRect(imagePointX,imagePointX,image.GetWidth(),image.GetHeight());
 	graphics.DrawImage(&image, destRect, 0,0,image.GetWidth(),image.GetHeight(),UnitPixel,&attr);
 	
+
+
+	ReleaseDC(pDC);
 }
 
 ///////////////////////////////////////////
@@ -636,4 +688,3 @@ void CGraphicView::OnPaint()
 	// Do not call CView::OnPaint() for painting messages
 
 }
-

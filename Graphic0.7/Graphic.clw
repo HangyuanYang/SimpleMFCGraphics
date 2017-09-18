@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CGraphicView
+LastClass=SettingDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
@@ -15,13 +15,13 @@ Class3=CGraphicView
 Class4=CMainFrame
 
 ResourceCount=4
-Resource1=IDD_DLG_ROTATE
+Resource1=IDD_ABOUTBOX
 Class5=CAboutDlg
 Resource2=IDD_DLG_SETTING
 Class6=SettingDlg
-Resource3=IDD_ABOUTBOX
+Resource3=IDR_MAINFRAME
 Class7=CRotateDlg
-Resource4=IDR_MAINFRAME
+Resource4=IDD_DLG_ROTATE
 
 [CLS:CGraphicApp]
 Type=0
@@ -53,7 +53,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_ROTATE
+LastObject=ID_ZOOM
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -109,10 +109,12 @@ Command27=IDM_TRANSPARENTBRUSH
 Command28=ID_ERASE
 Command29=ID_FILLAREA
 Command30=ID_IMPORTSAMPLE
-Command31=ID_ROTATE
-Command32=ID_TRANSLATE
-Command33=ID_GRAY
-CommandCount=33
+Command31=ID_ALL
+Command32=ID_ZOOM
+Command33=ID_ROTATE
+Command34=ID_TRANSLATE
+Command35=ID_GRAY
+CommandCount=35
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -149,18 +151,20 @@ CommandCount=8
 [DLG:IDD_DLG_SETTING]
 Type=1
 Class=SettingDlg
-ControlCount=11
-Control1=IDC_LINEWIDTH,edit,1350639745
-Control2=IDC_STATIC,static,1342308352
+ControlCount=13
+Control1=IDC_STATIC,static,1342308352
+Control2=IDC_LINEWIDTH,edit,1350639745
 Control3=IDC_STATIC,button,1342177287
 Control4=IDC_LINEMODEL1,button,1342373897
 Control5=IDC_LINEMODEL2,button,1342242825
 Control6=IDC_LINEMODEL3,button,1342242825
-Control7=IDOK,button,1342242817
-Control8=IDCANCEL,button,1342242816
-Control9=IDC_FILL1,button,1342373897
-Control10=IDC_FILL2,button,1342242825
-Control11=IDC_STATIC,button,1342177287
+Control7=IDC_LINEMODEL4,button,1342242825
+Control8=IDC_LINEMODEL5,button,1342242825
+Control9=IDC_STATIC,button,1342177287
+Control10=IDC_FILL1,button,1342373897
+Control11=IDC_FILL2,button,1342242825
+Control12=IDOK,button,1342242817
+Control13=IDCANCEL,button,1342242816
 
 [CLS:SettingDlg]
 Type=0
@@ -169,7 +173,7 @@ ImplementationFile=SettingDlg.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=IDC_FILL1
+LastObject=IDC_LINEMODEL1
 
 [DLG:IDD_DLG_ROTATE]
 Type=1

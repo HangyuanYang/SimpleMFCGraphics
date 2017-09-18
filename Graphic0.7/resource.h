@@ -17,6 +17,8 @@
 #define IDC_ROTATEANGLE                 1009
 #define IDC_ROTATEMODEL1                1010
 #define IDC_ROTATEMODEL2                1011
+#define IDC_LINEMODEL4                  1012
+#define IDC_LINEMODEL5                  1014
 #define IDM_LINE                        32771
 #define IDM_ELLIPSE                     32773
 #define IDM_DOT                         32774
@@ -34,6 +36,8 @@
 #define ID_IMPORTSAMPLE                 32786
 #define ID_GRAY                         32787
 #define ID_TRANSLATE                    32788
+#define ID_ALL                          32789
+#define ID_ZOOM                         32790
 
 // Next default values for new objects
 // 
@@ -41,8 +45,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_COMMAND_VALUE         32791
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

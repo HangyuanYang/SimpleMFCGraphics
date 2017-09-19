@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=SettingDlg
+LastClass=CGraphicView
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
@@ -53,7 +53,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_ZOOM
+LastObject=ID_ALL
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -108,13 +108,12 @@ Command26=IDM_BITMAPBRUSH
 Command27=IDM_TRANSPARENTBRUSH
 Command28=ID_ERASE
 Command29=ID_FILLAREA
-Command30=ID_IMPORTSAMPLE
-Command31=ID_ALL
-Command32=ID_ZOOM
-Command33=ID_ROTATE
-Command34=ID_TRANSLATE
-Command35=ID_GRAY
-CommandCount=35
+Command30=ID_ALL
+Command31=ID_ZOOM
+Command32=ID_ROTATE
+Command33=ID_TRANSLATE
+Command34=ID_GRAY
+CommandCount=34
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -173,7 +172,7 @@ ImplementationFile=SettingDlg.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=IDC_LINEMODEL1
+LastObject=IDC_LINEMODEL4
 
 [DLG:IDD_DLG_ROTATE]
 Type=1

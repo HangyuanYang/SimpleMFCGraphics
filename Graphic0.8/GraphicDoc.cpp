@@ -94,6 +94,7 @@ void CGraphicDoc::OnFileOpen()
 	//打开文件对话框
 	if(dlg.DoModal()==IDOK){
 		filepath=dlg.GetPathName();
+		FilePath=filepath;
 		if(file.Open(filepath,CFile::modeRead|CFile::shareDenyNone,NULL)==0)
 		{
 			//读取文件失败
@@ -139,6 +140,7 @@ void CGraphicDoc::OnFileOpen()
 		//图像读取完毕，关闭文件，设置标志
 		file.Close();
 		flagOpen=1;
+		this->UpdateAllViews(NULL);
 	}
 }
 

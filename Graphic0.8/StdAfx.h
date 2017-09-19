@@ -21,6 +21,8 @@
 // MFC support for Internet Explorer 4 Common Controls	//此处必须添加，否则出错
 #include <afxdtctl.h>
 
+#include <atlbase.h>  //CString转WCHAR*
+
 #include <gdiplus.h>
 using namespace Gdiplus;
 #pragma comment(lib, "gdiplus.lib")

@@ -26,6 +26,7 @@ public:
 	RGBQUAD* quad;  //调色板
 	BITMAPFILEHEADER bf;//文件头
 	BITMAPINFOHEADER bi;  //信息头 
+	CString FilePath;
 // Operations
 public:
 

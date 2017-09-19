@@ -43,7 +43,6 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_COMMAND(ID_FILLAREA, OnFillarea)
 	ON_COMMAND(ID_ROTATE, OnRotate)
 	ON_WM_PAINT()
-	ON_COMMAND(ID_IMPORTSAMPLE, OnImportsample)
 	ON_COMMAND(ID_GRAY, OnGray)
 	ON_COMMAND(ID_ALL, OnAll)
 	ON_WM_LBUTTONDBLCLK()
@@ -417,43 +416,29 @@ BOOL CGraphicView::OnEraseBkgnd(CDC* pDC)
 	return true;
 }
 
-void CGraphicView::OnImportsample() 
-{
-	// TODO: Add your command handler code here
-	
-	CDC *pDC=GetDC();
-	Graphics graphics(pDC->GetSafeHdc());
-	Image image(L"res\\lena.bmp");
-	CRect rect;
-	this->GetClientRect(&rect);
-	pDC->FillSolidRect(&rect,RGB(255,255,255));
-	graphics.DrawImage(&image, imagePointX, imagePointX);
-
-
-	//initial
-	m_nRotateModel=0;
-	m_nAngle=0;
-	imagePointX=100;
-	imagePointY=100;
-
-
-
-
-	ReleaseDC(pDC);
-}
-
 
 void CGraphicView::OnAll() 
 {
 	// TODO: Add your command handler code here
-	CDC* pDC = GetDC();
+
+    CDC* pDC = GetDC();
 	Graphics graph(pDC->GetSafeHdc());
-	Image image(L"res\\lena.bmp");
-	CRect rect;
-	GetClientRect(rect);  // 获得窗口绘制区的大小
-	graph.DrawImage(&image, 0, 0, rect.Width(),rect.Height()); // 绘制图像
+
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc); 
+	if(pDoc->flagOpen!=1)
+	{
+	  AfxMessageBox("请先打开图片!");
+	}else
+	{
+	  CRect rect;
+	  this->GetClientRect(rect);  // 获得窗口绘制区的大小
+	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+
+	  graph.DrawImage(m_pImg, 0, 0, rect.Width(),rect.Height()); // 绘制图像
 
 
+	}
 
 	ReleaseDC(pDC);
 }
@@ -463,11 +448,23 @@ void CGraphicView::OnZoom()
 	// TODO: Add your command handler code here
 	CDC* pDC = GetDC();
 	Graphics graph(pDC->GetSafeHdc());
-	Image image(L"res\\lena.bmp");
-	graph.DrawImage(&image, imagePointX,imagePointY,image.GetWidth(),image.GetHeight()); // 绘制图像
 
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc);
 
+	if(pDoc->flagOpen!=1)
+	{
+	  AfxMessageBox("请先打开图片!");
+    }
+	else
+	{
+      CRect rect;
+	  this->GetClientRect(&rect);
+  	  pDC->FillSolidRect(&rect,RGB(255,255,255));
 
+	  graph.DrawImage(m_pImg, imagePointX,imagePointY,m_pImg->GetWidth(),m_pImg->GetHeight()); // 绘制图像
+	
+	}
 
 	ReleaseDC(pDC);
 }
@@ -475,33 +472,44 @@ void CGraphicView::OnZoom()
 void CGraphicView::OnRotate() 
 {
 	// TODO: Add your command handler code here
-	CRotateDlg dlg;
-	dlg.m_nRotateModel=m_nRotateModel;
-	dlg.m_nAngle=m_nAngle;
-	if(IDOK==dlg.DoModal()){
-		m_nRotateModel+=dlg.m_nRotateModel;
-		m_nAngle+=dlg.m_nAngle;
-	}
 
 	CDC *pDC=GetDC();
 	Graphics graphics(pDC->GetSafeHdc());
-	Image image(L"res\\lena.bmp");
-	graphics.TranslateTransform(1.0f*(imagePointX+100),1.0f*(imagePointY+100)); //源点移动到旋转中心
+
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc);
+
+	if(pDoc->flagOpen!=1)
+	{
+	  AfxMessageBox("请先打开图片!");
+    }
+	else
+	{
+	  CRotateDlg dlg;
+	  dlg.m_nRotateModel=m_nRotateModel;
+  	  dlg.m_nAngle=m_nAngle;
+	  if(IDOK==dlg.DoModal()){
+		  m_nRotateModel+=dlg.m_nRotateModel;
+		  m_nAngle+=dlg.m_nAngle;
+	  }
+     
+	  graphics.TranslateTransform(1.0f*(imagePointX+100),1.0f*(imagePointY+100)); //源点移动到旋转中心
 	
 	
-	//旋转
-	if(!m_nRotateModel)graphics.RotateTransform(1.0f*m_nAngle); 
-	else graphics.RotateTransform(1.0f*(1080-m_nAngle)); 
+	  //旋转
+	  if(!m_nRotateModel)graphics.RotateTransform(1.0f*m_nAngle); 
+	  else graphics.RotateTransform(1.0f*(1080-m_nAngle)); 
 
-	graphics.TranslateTransform(1.0f*(0-(imagePointX+100)), 1.0f*(0-(imagePointY+100)));//还原源点
+	  graphics.TranslateTransform(1.0f*(0-(imagePointX+100)), 1.0f*(0-(imagePointY+100)));//还原源点
 
-    CRect rect;
-	this->GetClientRect(&rect);
-	pDC->FillSolidRect(&rect,RGB(255,255,255));
-    //在某个起点显示图像
-    graphics.DrawImage(&image, imagePointX, imagePointY);
+      CRect rect;
+	  this->GetClientRect(&rect);
+  	  pDC->FillSolidRect(&rect,RGB(255,255,255));
 
+      //在某个起点显示图像
+      graphics.DrawImage(m_pImg, imagePointX, imagePointY);
 
+	}
 
 
 	ReleaseDC(pDC);
@@ -513,26 +521,35 @@ void CGraphicView::OnGray()
 	// TODO: Add your command handler code here
 	CDC *pDC=GetDC();
 	Graphics graphics(pDC->GetSafeHdc());
-	Image image(L"res\\lena.bmp");
-	CRect rect;
-	this->GetClientRect(&rect);
-	pDC->FillSolidRect(&rect,RGB(255,255,255));
 
-	ColorMatrix colorMatrix=
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc);
+
+	if(pDoc->flagOpen!=1)
 	{
-		0.299f,0.299f,0.299f,0,0,
+	  AfxMessageBox("请先打开图片!");
+    }
+	else
+	{
+	  CRect rect;
+	  this->GetClientRect(&rect);
+	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+
+	  ColorMatrix colorMatrix=
+	  {
+		 0.299f,0.299f,0.299f,0,0,
 		0.587f,0.587f,0.587f,0,0,
 		0.114f,0.114f,0.114f,0,0,
 		0,0,0,1,0,
 		0,0,0,0,1
-	};
+	  };
 
-	ImageAttributes attr;
-	attr.SetColorMatrix(&colorMatrix);
-
-	Rect destRect(imagePointX,imagePointX,image.GetWidth(),image.GetHeight());
-	graphics.DrawImage(&image, destRect, 0,0,image.GetWidth(),image.GetHeight(),UnitPixel,&attr);
+	  ImageAttributes attr;
+	  attr.SetColorMatrix(&colorMatrix);
 	
+	  Rect destRect(imagePointX,imagePointY,m_pImg->GetWidth(),m_pImg->GetHeight());
+	  graphics.DrawImage(m_pImg, destRect, 0,0,m_pImg->GetWidth(),m_pImg->GetHeight(),UnitPixel,&attr);
+	}
 
 
 	ReleaseDC(pDC);
@@ -609,43 +626,7 @@ void CGraphicView::OnFillarea()
 	m_nDrawType=11;
 }
 
-
-
-
-/////////////////////////////////Addtion Functions
-void CGraphicView::FillAreaqaq(CPoint point,COLORREF originColor)
-{
-   
-   // BFS is so slow
-   /*
-   int x,y,l,r,ll,rr,tx,ty;
-   //创建获得设备描述
-   CClientDC dc(this);
-   HDC hDC=::GetDC(NULL);
-   RECT rc;
-   GetClientRect(&rc);
-   dc.SetPixel(point,m_Color);
-   l=r=0;
-   Pts[l]=point;
-   while(l<=r){
-     ll=l%Pnum;
-	 x=Pts[ll].x;
-	 y=Pts[ll].y;
-     for(int i=0;i<4;i++){
-	   tx=x+fx[i];
-	   ty=y+fy[i];
-	   CPoint xp(tx,ty);
-	   if(tx>=0&&ty>=0&&tx<=rc.bottom&&ty<=rc.right&&originColor==::GetPixel(hDC,tx,ty)){
-		    dc.SetPixel(xp,m_Color);
-			++r;rr=r%Pnum;
-			Pts[rr]=xp;
-	   }
-	 }
-	 l++;
-   }
-   */
-}
-
+//////////////////////////////////////
 void CGraphicView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
@@ -657,13 +638,20 @@ void CGraphicView::OnPaint()
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc); 
 	
+	//initial
+	m_nRotateModel=0;
+	m_nAngle=0;
+	imagePointX=100;
+	imagePointY=100;
+
 	//是否已打开某个BMP文件
 	if(pDoc->flagOpen==1)
 	{
+		Load((LPCTSTR)(pDoc->FilePath));
 		//这个函数显示DIB
-		SetDIBitsToDevice(dc.m_hDC,  //DIB将输出的设备描述表
-			0,               //设备描述表中位图输出起始逻辑x地址
-			0,               //设备描述表中位图输出起始逻辑x地址 
+		/*SetDIBitsToDevice(dc.m_hDC,  //DIB将输出的设备描述表
+			imagePointX,               //设备描述表中位图输出起始逻辑x地址
+			imagePointY,               //设备描述表中位图输出起始逻辑x地址 
 			pDoc->bi.biWidth,  //DIB的宽度
 			pDoc->bi.biHeight, //DIB的高度
 			0,                 //DIB开始读取输出的像素数据的x位置
@@ -672,8 +660,15 @@ void CGraphicView::OnPaint()
 			pDoc->bi.biHeight, //DIB的行数，对应包含在由lpBits所指内存缓冲区中的数据
 			pDoc->lpbuf,       //包含像素数据的内存缓冲区的指针
 			pDoc->pbi,        //指向初始化了的BITMAPINFO数据结构的指针，描述了位图的大小和色彩数据
-			DIB_RGB_COLORS);   //指定是显示的颜色
-	  Invalidate(false);
+			DIB_RGB_COLORS);   //指定是显示的颜色*/
+	  CDC* pDC=GetDC();
+      Graphics graphics(pDC->GetSafeHdc());
+	  CRect rect;
+	  this->GetClientRect(&rect);
+	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+	  graphics.DrawImage(m_pImg, imagePointX, imagePointY);
+	  ReleaseDC(pDC);
+	  //Invalidate(false);
 	  return;
 	}
 	// Do not call CView::OnPaint() for painting messages
@@ -687,4 +682,73 @@ void CGraphicView::OnPaint()
 	
 	// Do not call CView::OnPaint() for painting messages
 
+}
+
+bool CGraphicView::Load( LPCTSTR pszFileName )
+{
+	ASSERT( pszFileName != NULL );
+
+	CFile file;
+	DWORD dwSize;
+
+        // 打开文件
+	if ( !file.Open( pszFileName,
+		CFile::modeRead | 
+		CFile::shareDenyWrite ) )
+	{
+		TRACE( _T( "Load (file): Error opening file %s\n" ), pszFileName );
+		return FALSE;
+	};
+
+        // 依据文件大小分配HGLOBAL内存
+	dwSize = (DWORD)file.GetLength();
+	HGLOBAL hGlobal = GlobalAlloc( GMEM_MOVEABLE | GMEM_NODISCARD, dwSize );
+	if ( !hGlobal )
+	{
+		TRACE( _T( "Load (file): Error allocating memory\n" ) );
+		return FALSE;
+	};
+
+	char *pData = reinterpret_cast<char*>(GlobalLock(hGlobal));
+	if ( !pData )
+	{
+		TRACE( _T( "Load (file): Error locking memory\n" ) );
+		GlobalFree( hGlobal );
+		return FALSE;
+	};
+
+        // 将文件内容读到HGLOBAL内存中
+	TRY
+	{
+		file.Read( pData, dwSize );
+	}
+	CATCH( CFileException, e );                                          
+	{
+		TRACE( _T( "Load (file): An exception occured while reading the file %s\n"),
+			pszFileName );
+		GlobalFree( hGlobal );
+		e->Delete();
+		file.Close();
+		return FALSE;
+	}
+	END_CATCH
+
+	GlobalUnlock( hGlobal );
+	file.Close();
+
+        // 利用hGlobal内存中的数据创建stream
+	IStream *pStream = NULL;
+	if ( CreateStreamOnHGlobal( hGlobal, TRUE, &pStream ) != S_OK )
+	{
+		return FALSE;
+	}
+
+	m_pImg = Image::FromStream( pStream );
+     ASSERT( m_pImg != NULL );
+
+	// 要加上这一句，否则由GlobalAlloc得来的hGlobal内存没有被释放，导致内存泄露，由于
+	// CreateStreamOnHGlobal第二个參数被设置为TRUE，所以调用pStream->Release()会自己主动
+	// 将hGlobal内存（參见msdn对CreateStreamOnHGlobal的说明）
+	pStream->Release();
+ 
 }

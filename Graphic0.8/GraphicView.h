@@ -37,9 +37,10 @@ public:
 	int m_nRotateModel;
 	int imagePointX;
 	int imagePointY;
+	Image* m_pImg;
 // Operations
 public:
-	void FillAreaqaq(CPoint,COLORREF);
+	bool Load( LPCTSTR pszFileName );
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CGraphicView)
@@ -84,7 +85,6 @@ protected:
 	afx_msg void OnFillarea();
 	afx_msg void OnRotate();
 	afx_msg void OnPaint();
-	afx_msg void OnImportsample();
 	afx_msg void OnGray();
 	afx_msg void OnAll();
 	afx_msg void OnZoom();

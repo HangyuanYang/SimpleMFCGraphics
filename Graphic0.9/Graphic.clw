@@ -15,15 +15,15 @@ Class3=CGraphicView
 Class4=CMainFrame
 
 ResourceCount=6
-Resource1=IDR_MAINFRAME
+Resource1=IDD_ABOUTBOX
 Class5=CAboutDlg
-Resource2=IDD_ABOUTBOX
+Resource2=IDD_DLG_SETTING
 Class6=SettingDlg
-Resource3=IDD_DLG_ZOOM
+Resource3=IDR_MAINFRAME
 Class7=CRotateDlg
-Resource4=IDD_DLG_ROTATE
+Resource4=IDD_DLG_ZOOM
 Class8=CZoomDlg
-Resource5=IDD_DLG_SETTING
+Resource5=IDD_DLG_ROTATE
 Class9=CTranslateTrans
 Resource6=IDD_Dlg_TranslateTrans
 

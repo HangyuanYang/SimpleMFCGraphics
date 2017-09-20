@@ -98,7 +98,21 @@ void CGraphicView::OnDraw(CDC* pDC)
 	CGraphicDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	// TODO: add draw code for native data here
+	CRect rect;
+	this->GetClientRect(&rect);
+	MemBitmap.CreateCompatibleBitmap(pDC,rect.Width(),rect.Height());
+	//随后建立与屏幕显示兼容的内存显示设备
+    MemDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+    //将位图选入到内存显示设备中
+    //只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+    CBitmap *pOldBit=MemDC.SelectObject(&MemBitmap);
 
+    //先用背景色将位图清除干净，这里我用的是白色作为背景
+    //你也可以用自己应该用的颜色
+    MemDC.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,255,255));
+    MemDC.MoveTo(0,0);
+    MemDC.LineTo(100,100);
 //双缓冲实现技术
 /*C++ code*/
 //	RECT rc;
@@ -107,10 +121,6 @@ void CGraphicView::OnDraw(CDC* pDC)
 
 //	Graphics bmpGraphics(&bmp);
 //	bmpGraphics.SetSmoothingMode(SmoothingModeAntiAlias);
-
-/*Drawing on bitmap*/
-//	SolidBrush bkBrush(Color(0,0,0));
-//	bmpGraphics.FillRectangle(&bkBrush,0,0,rc.right,rc.bottom);
 
 /*Drawing on DC*/
 //	Graphics graphics(pDC->m_hDC);
@@ -124,10 +134,53 @@ void CGraphicView::OnDraw(CDC* pDC)
 
 
     //GDI+使用尝试
-//	Graphics graphics(pDC->m_hDC);
-//	Pen pen(Color(255, 0, 255));
-//	graphics.DrawLine(&pen, 0, 0, 200, 100);
+	Graphics graphics(MemDC.GetSafeHdc());
+	Pen pen(Color(255, 0, 255));
+	graphics.DrawLine(&pen, 0, 0, 200, 100);
+
+    CString filename("res\\image.jpeg");//名字
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filename);
+    Bitmap bm((HBITMAP)MemBitmap, NULL);//定义bitmap
+    CLSID pngClsid; 
+    GetEncoderClsid(L"image/jpeg", &pngClsid); 
+    bm.Save(pBuf, &pngClsid, NULL);
 }
+
+int CGraphicView::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+{
+   UINT num= 0;
+   UINT size= 0;
+
+   ImageCodecInfo* pImageCodecInfo= NULL;
+
+   GetImageEncodersSize(&num, &size);
+   if(size== 0)
+   {
+    return -1;
+   }
+   pImageCodecInfo= (ImageCodecInfo*)(malloc(size));
+   if(pImageCodecInfo== NULL)
+   {
+    return -1;
+   }
+
+   GetImageEncoders(num, size, pImageCodecInfo);
+
+   for(UINT j=0; j< num; ++j)
+   {
+    if(wcscmp(pImageCodecInfo[j].MimeType, format)== 0)
+	{
+     *pClsid= pImageCodecInfo[j].Clsid;
+     free(pImageCodecInfo);
+     return j;
+	}
+   }
+
+  free(pImageCodecInfo);
+  return -1;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CGraphicView printing
@@ -188,7 +241,7 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
 	HDC hDC=::GetDC(NULL);
 	//获取当前点的RGB值
 	COLORREF clr=::GetPixel(hDC, point.x, point.y); 
-	Gdiplus::Graphics graphics(hDC);
+	Gdiplus::Graphics graphics(MemDC.GetSafeHdc());
 
 	//改变鼠标指针形状
 	HCURSOR hCur;
@@ -208,8 +261,8 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
 	case 11:
 		//这个填充能用。。就是有点卡
 		if(clr!=m_Color){
-			dc.SelectObject(brush);
-			ExtFloodFill(dc,point.x,point.y,clr,FLOODFILLSURFACE);
+			MemDC.SelectObject(brush);									
+			ExtFloodFill(MemDC,point.x,point.y,clr,FLOODFILLSURFACE);		
 		}
 		break;
 	/*fail
@@ -254,14 +307,14 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 	if(m_nFILLMODEL==1){
 	   CBrush *pBrush=CBrush::FromHandle((HBRUSH)GetStockObject(NULL_BRUSH));
        //将空画刷选入设备描述表
-	    pOldBrush= dc.SelectObject(pBrush);
+	    pOldBrush= MemDC.SelectObject(pBrush);
 	}else{
 		brush.CreateSolidBrush(m_Color);
-		pOldBrush=dc.SelectObject(&brush);
+		pOldBrush=MemDC.SelectObject(&brush);
 	}
 
 	
-    //画出线宽大于1的实线/虚线/点线
+    //画出线宽大于1的实线/虚线/点线/点划线/双点划线
 	LOGBRUSH logBrush;  
 	logBrush.lbStyle = BS_SOLID;  
 	logBrush.lbColor = m_Color;  
@@ -275,32 +328,32 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 	CPen pen4(PS_DASHDOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
 	//创建双点划线画笔
 	CPen pen5(PS_DASHDOTDOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
-	dc.SelectObject(&pen1);
-	if(m_LineStyle==1)dc.SelectObject(&pen2);		//选择画笔
-	else if(m_LineStyle==2)dc.SelectObject(&pen3);
-	else if(m_LineStyle==3)dc.SelectObject(&pen4);
-	else if(m_LineStyle!=0)dc.SelectObject(&pen5);		//选择画笔
+	MemDC.SelectObject(&pen1);
+	if(m_LineStyle==1)MemDC.SelectObject(&pen2);		//选择画笔
+	else if(m_LineStyle==2)MemDC.SelectObject(&pen3);
+	else if(m_LineStyle==3)MemDC.SelectObject(&pen4);
+	else if(m_LineStyle!=0)MemDC.SelectObject(&pen5);		//选择画笔
 	
 
 	switch (m_nDrawType){
 	  case 1:/*绘制点*/ 
-		  dc.SetPixel(point,m_Color); 
+		  MemDC.SetPixel(point,m_Color); 
 		  break;   
 	  case 2:/*绘制直线*/
-		  dc.MoveTo(m_ptOrigin);
+		  MemDC.MoveTo(m_ptOrigin);
 		  /*调用MoveTo函数移动到原点*/
-		  dc.LineTo(point);
+		  MemDC.LineTo(point);
 		  /*调用LineTo函数绘制到终点*/
 		  break;
 	  case 3:/*绘制矩形*/
-		  dc.Rectangle(CRect(m_ptOrigin,point));
+		  MemDC.Rectangle(CRect(m_ptOrigin,point));
 		  //恢复先前的画刷
-		  dc.SelectObject(pOldBrush);
+		  MemDC.SelectObject(pOldBrush);
 		  break;
 	  case 4:/*绘制椭圆*/
-		  dc.Ellipse(CRect(m_ptOrigin,point));
+		  MemDC.Ellipse(CRect(m_ptOrigin,point));
 		  //恢复先前的画刷
-		  dc.SelectObject(pOldBrush);
+		  MemDC.SelectObject(pOldBrush);
 		  break;
 	}
 
@@ -309,7 +362,7 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 		//Simplebrush
 		CBrush brush(m_Color);
 	    //利用画刷填充鼠标拖曳过程中形成的矩形区域 
-        dc.FillRect(CRect(m_ptOrigin,point),&brush);
+        MemDC.FillRect(CRect(m_ptOrigin,point),&brush);
 	}
 	if(m_nDrawType==8){
 		//Bitmapbrush
@@ -320,7 +373,7 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 		//创建位图画刷
 		CBrush brush(&bitmap);
 		//利用红色画刷填充鼠标拖曳过程中形成的矩形区域
-		dc.FillRect(CRect(m_ptOrigin,point),&brush);
+		MemDC.FillRect(CRect(m_ptOrigin,point),&brush);
 	}
 	if(m_nDrawType==9){
 		//Transparentbrush
@@ -329,14 +382,14 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 		//将空画刷选入设备描述表
 		CBrush *pOldBrush = dc.SelectObject(pBrush);
 		//绘制一个矩形
-		dc.Rectangle(CRect(m_ptOrigin,point));
+		MemDC.Rectangle(CRect(m_ptOrigin,point));
 		//恢复先前的画刷
-		dc.SelectObject(pOldBrush);
+		MemDC.SelectObject(pOldBrush);
 	}
 //??
-	OnPrepareDC(&dc);
-	dc.DPtoLP(&m_ptOrigin);
-	dc.DPtoLP(&point);
+	OnPrepareDC(&MemDC);
+	MemDC.DPtoLP(&m_ptOrigin);
+	MemDC.DPtoLP(&point);
 
 	CView::OnLButtonUp(nFlags, point);
 }
@@ -347,26 +400,35 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 	//创建并获得设备描述
 	CClientDC dc(this);
 
-    //画出线宽大于1的实线/虚线/点线
+    //画出线宽大于1的实线/虚线/点线/点划线/双点划线
 	LOGBRUSH logBrush;  
 	logBrush.lbStyle = BS_SOLID;  
 	logBrush.lbColor = m_Color;  
-	CPen pen1(m_LineStyle,m_LineWidth,m_Color);//创建画笔
-	CPen pen2(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
-	CPen pen3(PS_DOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);//创建画笔
-	dc.SelectObject(&pen1);
-	if(m_LineStyle==1)dc.SelectObject(&pen2);		//选择画笔
-	else  if(m_LineStyle!=0)dc.SelectObject(&pen3);		//选择画笔
+	//创建实线画笔
+	CPen pen1(m_LineStyle,m_LineWidth,m_Color);
+	//创建虚线画笔
+	CPen pen2(PS_DASH | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
+	//创建点线画笔
+	CPen pen3(PS_DOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
+	//创建点划线画笔
+	CPen pen4(PS_DASHDOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
+	//创建双点划线画笔
+	CPen pen5(PS_DASHDOTDOT | PS_GEOMETRIC | PS_ENDCAP_ROUND,m_LineWidth,&logBrush);
+	MemDC.SelectObject(&pen1);
+	if(m_LineStyle==1)MemDC.SelectObject(&pen2);		//选择画笔
+	else if(m_LineStyle==2)MemDC.SelectObject(&pen3);
+	else if(m_LineStyle==3)MemDC.SelectObject(&pen4);
+	else if(m_LineStyle!=0)MemDC.SelectObject(&pen5);		//选择画笔
 
 	if(m_bDraw==true)
 		switch(m_nDrawType){
 			case 5://SECTOR
-				dc.MoveTo(m_ptOrigin);                  
-				dc.LineTo(point);
+				MemDC.MoveTo(m_ptOrigin);                  
+				MemDC.LineTo(point);
 				break;
 			case 6://Polyline
-				dc.MoveTo(m_ptOrigin);                  
-				dc.LineTo(point);
+				MemDC.MoveTo(m_ptOrigin);                  
+				MemDC.LineTo(point);
 				//修改线段的起点        
 				m_ptOrigin=point;
 				break;
@@ -378,7 +440,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 				pt1.y=point.y-10;
 				pt2.x=point.x+10;
 				pt2.y=point.y+10;
-				dc.FillRect(CRect(pt1,pt2),&brush);
+				MemDC.FillRect(CRect(pt1,pt2),&brush);
 				break;
 		}
 	//恢复设备描述
@@ -426,7 +488,7 @@ void CGraphicView::OnAll()
 	// TODO: Add your command handler code here
 
     CDC* pDC = GetDC();
-	Graphics graph(pDC->GetSafeHdc());
+	Graphics graph(MemDC.GetSafeHdc());
 
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc); 
@@ -437,7 +499,7 @@ void CGraphicView::OnAll()
 	{
 	  CRect rect;
 	  this->GetClientRect(rect);  // 获得窗口绘制区的大小
-	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+	  MemDC.FillSolidRect(&rect,RGB(255,255,255));
 
 	  graph.DrawImage(m_pImg, 0, 0, rect.Width(),rect.Height()); // 绘制图像
 
@@ -451,7 +513,7 @@ void CGraphicView::OnZoom()
 {
 	// TODO: Add your command handler code here
 	CDC* pDC = GetDC();
-	Graphics graph(pDC->GetSafeHdc());
+	Graphics graph(MemDC.GetSafeHdc());
 
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
@@ -473,7 +535,7 @@ void CGraphicView::OnZoom()
 
       CRect rect;
 	  this->GetClientRect(&rect);
-  	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+  	  MemDC.FillSolidRect(&rect,RGB(255,255,255));
 
 	  graph.ScaleTransform(r, c);
 
@@ -489,7 +551,7 @@ void CGraphicView::OnRotate()
 	// TODO: Add your command handler code here
 
 	CDC *pDC=GetDC();
-	Graphics graphics(pDC->GetSafeHdc());
+	Graphics graphics(MemDC.GetSafeHdc());
 
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
@@ -535,7 +597,7 @@ void CGraphicView::OnTranslate()
 	// TODO: Add your command handler code here
 		// TODO: Add your command handler code here
 	CDC* pDC = GetDC();
-	Graphics graph(pDC->GetSafeHdc());
+	Graphics graph(MemDC.GetSafeHdc());
 
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
@@ -573,7 +635,7 @@ void CGraphicView::OnGray()
 {
 	// TODO: Add your command handler code here
 	CDC *pDC=GetDC();
-	Graphics graphics(pDC->GetSafeHdc());
+	Graphics graphics(MemDC.GetSafeHdc());
 
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
@@ -586,7 +648,7 @@ void CGraphicView::OnGray()
 	{
 	  CRect rect;
 	  this->GetClientRect(&rect);
-	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+	  MemDC.FillSolidRect(&rect,RGB(255,255,255));
 
 	  ColorMatrix colorMatrix=
 	  {
@@ -614,7 +676,7 @@ void CGraphicView::OnGauss()
 {  
 	// TODO: Add your command handler code here
 	CDC *pDC=GetDC();
-	Graphics graphics(pDC->GetSafeHdc());
+	Graphics graphics(MemDC.GetSafeHdc());
 
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
@@ -626,7 +688,7 @@ void CGraphicView::OnGauss()
     else{
 	  CRect rect;
 	  this->GetClientRect(&rect);
-	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+	  MemDC.FillSolidRect(&rect,RGB(255,255,255));
 	  
 
 	}
@@ -757,8 +819,6 @@ void CGraphicView::OnPaint()
 	  ReleaseDC(pDC);
 	  pDoc->flagOpen=2;
 	  //Invalidate(false);
-	  Bitmap box((WCHAR*)(LPCTSTR)pDoc->FilePath);
-
 	  return;
 	}
 	// Do not call CView::OnPaint() for painting messages
@@ -840,6 +900,6 @@ bool CGraphicView::Load( LPCTSTR pszFileName )
 	// CreateStreamOnHGlobal第二个參数被设置为TRUE，所以调用pStream->Release()会自己主动
 	// 将hGlobal内存（參见msdn对CreateStreamOnHGlobal的说明）
 	pStream->Release();
- 
+    return true;
 }
 

@@ -26,6 +26,8 @@ protected: // create from serialization only
 // Attributes
 public:
 	CGraphicDoc* GetDocument();
+    CDC MemDC; //首先定义一个显示设备对象
+    CBitmap   MemBitmap;//定义一个位图对象
 	CPoint m_ptOrigin;
 	int m_nDrawType;
 	bool m_bDraw;
@@ -42,9 +44,11 @@ public:
 	int m_ZoomColumn;
 	int m_TranslateLevel;
 	int m_TranslateVertical;
+
 // Operations
 public:
 	bool Load( LPCTSTR pszFileName );
+	int GetEncoderClsid(const WCHAR* , CLSID* );
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CGraphicView)

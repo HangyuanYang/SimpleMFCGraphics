@@ -38,6 +38,10 @@ public:
 	int imagePointX;
 	int imagePointY;
 	Image* m_pImg;
+	int m_ZoomRow;
+	int m_ZoomColumn;
+	int m_TranslateLevel;
+	int m_TranslateVertical;
 // Operations
 public:
 	bool Load( LPCTSTR pszFileName );
@@ -88,6 +92,8 @@ protected:
 	afx_msg void OnGray();
 	afx_msg void OnAll();
 	afx_msg void OnZoom();
+	afx_msg void OnTranslate();
+	afx_msg void OnGauss();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

@@ -8,20 +8,24 @@ NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
 LastPage=0
 
-ClassCount=7
+ClassCount=9
 Class1=CGraphicApp
 Class2=CGraphicDoc
 Class3=CGraphicView
 Class4=CMainFrame
 
-ResourceCount=4
-Resource1=IDD_ABOUTBOX
+ResourceCount=6
+Resource1=IDR_MAINFRAME
 Class5=CAboutDlg
-Resource2=IDD_DLG_SETTING
+Resource2=IDD_ABOUTBOX
 Class6=SettingDlg
-Resource3=IDR_MAINFRAME
+Resource3=IDD_DLG_ZOOM
 Class7=CRotateDlg
 Resource4=IDD_DLG_ROTATE
+Class8=CZoomDlg
+Resource5=IDD_DLG_SETTING
+Class9=CTranslateTrans
+Resource6=IDD_Dlg_TranslateTrans
 
 [CLS:CGraphicApp]
 Type=0
@@ -53,7 +57,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_ALL
+LastObject=ID_GAUSS
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -113,7 +117,8 @@ Command31=ID_ZOOM
 Command32=ID_ROTATE
 Command33=ID_TRANSLATE
 Command34=ID_GRAY
-CommandCount=34
+Command35=ID_GAUSS
+CommandCount=35
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -194,4 +199,46 @@ BaseClass=CDialog
 Filter=D
 LastObject=IDC_ROTATEMODEL1
 VirtualFilter=dWC
+
+[DLG:IDD_DLG_ZOOM]
+Type=1
+Class=CZoomDlg
+ControlCount=7
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,static,1342308865
+Control4=IDC_STATIC,static,1342308865
+Control5=IDC_STATIC,static,1342308865
+Control6=IDC_ZOOMROW,edit,1350639745
+Control7=IDC_ZOOMCOLUMN,edit,1350639745
+
+[CLS:CZoomDlg]
+Type=0
+HeaderFile=ZoomDlg.h
+ImplementationFile=ZoomDlg.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CZoomDlg
+VirtualFilter=dWC
+
+[CLS:CTranslateTrans]
+Type=0
+HeaderFile=TranslateTrans.h
+ImplementationFile=TranslateTrans.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=IDC_TRANSLATELEVEL
+VirtualFilter=dWC
+
+[DLG:IDD_Dlg_TranslateTrans]
+Type=1
+Class=CTranslateTrans
+ControlCount=7
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,static,1342308865
+Control4=IDC_STATIC,static,1342308865
+Control5=IDC_STATIC,static,1342308865
+Control6=IDC_TRANSLATELEVEL,edit,1350639745
+Control7=IDC_TRANSLATEVERTICAL,edit,1350639745
 

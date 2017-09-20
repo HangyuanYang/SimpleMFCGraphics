@@ -8,6 +8,8 @@
 #include "GraphicView.h"
 #include "SettingDlg.h"
 #include "RotateDlg.h"
+#include "ZoomDlg.h"
+#include "TranslateTrans.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -45,8 +47,10 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_WM_PAINT()
 	ON_COMMAND(ID_GRAY, OnGray)
 	ON_COMMAND(ID_ALL, OnAll)
-	ON_WM_LBUTTONDBLCLK()
 	ON_COMMAND(ID_ZOOM, OnZoom)
+	ON_COMMAND(ID_TRANSLATE, OnTranslate)
+	ON_WM_LBUTTONDBLCLK()
+	ON_COMMAND(ID_GAUSS, OnGauss)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -412,8 +416,8 @@ BOOL CGraphicView::OnEraseBkgnd(CDC* pDC)
 	// TODO: Add your message handler code here and/or call default
 	
 	// nothing
-	 //return CView::OnEraseBkgnd(pDC);
-	return true;
+	return CView::OnEraseBkgnd(pDC);
+	//return true;
 }
 
 
@@ -426,7 +430,7 @@ void CGraphicView::OnAll()
 
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc); 
-	if(pDoc->flagOpen!=1)
+	if(pDoc->flagOpen==0)
 	{
 	  AfxMessageBox("请先打开图片!");
 	}else
@@ -452,17 +456,28 @@ void CGraphicView::OnZoom()
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
 
-	if(pDoc->flagOpen!=1)
+	if(pDoc->flagOpen==0)
 	{
 	  AfxMessageBox("请先打开图片!");
     }
 	else
 	{
+	  float r,c;
+	  CZoomDlg dlg;
+	  dlg.m_ZoomRow=m_ZoomRow;
+	  dlg.m_ZoomColumn=m_ZoomColumn;
+	  if(IDOK==dlg.DoModal()){
+		r=(float)dlg.m_ZoomRow/(float)m_ZoomRow;
+	    c=(float)dlg.m_ZoomColumn/(float)m_ZoomColumn;
+	  }
+
       CRect rect;
 	  this->GetClientRect(&rect);
   	  pDC->FillSolidRect(&rect,RGB(255,255,255));
 
-	  graph.DrawImage(m_pImg, imagePointX,imagePointY,m_pImg->GetWidth(),m_pImg->GetHeight()); // 绘制图像
+	  graph.ScaleTransform(r, c);
+
+	  graph.DrawImage(m_pImg, imagePointX,imagePointY); // 绘制图像
 	
 	}
 
@@ -479,7 +494,7 @@ void CGraphicView::OnRotate()
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
 
-	if(pDoc->flagOpen!=1)
+	if(pDoc->flagOpen==0)
 	{
 	  AfxMessageBox("请先打开图片!");
     }
@@ -515,6 +530,44 @@ void CGraphicView::OnRotate()
 	ReleaseDC(pDC);
 }
 
+void CGraphicView::OnTranslate() 
+{
+	// TODO: Add your command handler code here
+		// TODO: Add your command handler code here
+	CDC* pDC = GetDC();
+	Graphics graph(pDC->GetSafeHdc());
+
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc);
+
+	if(pDoc->flagOpen==0)
+	{
+	  AfxMessageBox("请先打开图片!");
+    }
+	else
+	{
+	  CTranslateTrans dlg;
+	  dlg.m_TranslateLevel=m_TranslateLevel;
+	  dlg.m_TranslateVertical=m_TranslateVertical;
+	  if(IDOK==dlg.DoModal()){
+	    m_TranslateLevel+=dlg.m_TranslateLevel;
+	    m_TranslateVertical+=dlg.m_TranslateVertical;
+	  }
+
+      CRect rect;
+	  this->GetClientRect(&rect);
+  	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+
+	  graph.TranslateTransform((float)m_TranslateLevel, (float)m_TranslateVertical); 
+
+	  graph.DrawImage(m_pImg, imagePointX,imagePointY); // 绘制图像
+	
+	}
+
+	ReleaseDC(pDC);
+}
+
+
 
 void CGraphicView::OnGray() 
 {
@@ -525,7 +578,7 @@ void CGraphicView::OnGray()
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc);
 
-	if(pDoc->flagOpen!=1)
+	if(pDoc->flagOpen==0)
 	{
 	  AfxMessageBox("请先打开图片!");
     }
@@ -554,6 +607,32 @@ void CGraphicView::OnGray()
 
 	ReleaseDC(pDC);
 }
+
+
+//高斯平滑  
+void CGraphicView::OnGauss()   
+{  
+	// TODO: Add your command handler code here
+	CDC *pDC=GetDC();
+	Graphics graphics(pDC->GetSafeHdc());
+
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc);
+
+    if(pDoc->flagOpen==0) {  
+        AfxMessageBox("载入图片后才能图像增强(平滑)!",MB_OK,0);  
+        return;  
+    }  
+    else{
+	  CRect rect;
+	  this->GetClientRect(&rect);
+	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+	  
+
+	}
+
+	ReleaseDC(pDC);
+}  
 
 ///////////////////////////////////////////
 
@@ -638,15 +717,17 @@ void CGraphicView::OnPaint()
 	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
 	ASSERT_VALID(pDoc); 
 	
-	//initial
-	m_nRotateModel=0;
-	m_nAngle=0;
-	imagePointX=100;
-	imagePointY=100;
+
 
 	//是否已打开某个BMP文件
 	if(pDoc->flagOpen==1)
-	{
+	{	//initial
+		m_nRotateModel=0;
+		m_nAngle=0;
+		imagePointX=100;
+		imagePointY=100;
+	    m_TranslateLevel=100;
+	    m_TranslateVertical=100;
 		Load((LPCTSTR)(pDoc->FilePath));
 		//这个函数显示DIB
 		/*SetDIBitsToDevice(dc.m_hDC,  //DIB将输出的设备描述表
@@ -663,12 +744,21 @@ void CGraphicView::OnPaint()
 			DIB_RGB_COLORS);   //指定是显示的颜色*/
 	  CDC* pDC=GetDC();
       Graphics graphics(pDC->GetSafeHdc());
+
+
 	  CRect rect;
 	  this->GetClientRect(&rect);
 	  pDC->FillSolidRect(&rect,RGB(255,255,255));
+
+	  m_ZoomRow=m_pImg->GetWidth();
+	  m_ZoomColumn=m_pImg->GetHeight();
+
 	  graphics.DrawImage(m_pImg, imagePointX, imagePointY);
 	  ReleaseDC(pDC);
+	  pDoc->flagOpen=2;
 	  //Invalidate(false);
+	  Bitmap box((WCHAR*)(LPCTSTR)pDoc->FilePath);
+
 	  return;
 	}
 	// Do not call CView::OnPaint() for painting messages
@@ -752,3 +842,4 @@ bool CGraphicView::Load( LPCTSTR pszFileName )
 	pStream->Release();
  
 }
+

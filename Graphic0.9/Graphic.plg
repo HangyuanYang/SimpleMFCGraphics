@@ -6,13 +6,13 @@
 --------------------Configuration: Graphic - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\11\AppData\Local\Temp\RSP21FF.tmp" with contents
+Creating temporary file "C:\Users\11\AppData\Local\Temp\RSPA90C.tmp" with contents
 [
 /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"E:\study\东南大学\学科作业\MFC\Graphic\SimpleMFCGraphics\Graphic0.8\GraphicView.cpp"
+"E:\study\东南大学\学科作业\MFC\Graphic\Graphic0.8\GraphicView.cpp"
 ]
-Creating command line "cl.exe @C:\Users\11\AppData\Local\Temp\RSP21FF.tmp" 
-Creating temporary file "C:\Users\11\AppData\Local\Temp\RSP2200.tmp" with contents
+Creating command line "cl.exe @C:\Users\11\AppData\Local\Temp\RSPA90C.tmp" 
+Creating temporary file "C:\Users\11\AppData\Local\Temp\RSPA90D.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/Graphic.pdb" /debug /machine:I386 /out:"Debug/Graphic.exe" /pdbtype:sept 
 ".\Debug\Graphic.obj"
@@ -22,13 +22,15 @@ Creating temporary file "C:\Users\11\AppData\Local\Temp\RSP2200.tmp" with conten
 ".\Debug\RotateDlg.obj"
 ".\Debug\SettingDlg.obj"
 ".\Debug\StdAfx.obj"
+".\Debug\TranslateTrans.obj"
+".\Debug\ZoomDlg.obj"
 ".\Debug\Graphic.res"
 ]
-Creating command line "link.exe @C:\Users\11\AppData\Local\Temp\RSP2200.tmp"
+Creating command line "link.exe @C:\Users\11\AppData\Local\Temp\RSPA90D.tmp"
 <h3>Output Window</h3>
 Compiling...
 GraphicView.cpp
-e:\study\东南大学\学科作业\mfc\graphic\simplemfcgraphics\graphic0.8\graphicview.cpp(754) : warning C4715: 'CGraphicView::Load' : not all control paths return a value
+e:\study\东南大学\学科作业\mfc\graphic\graphic0.8\graphicview.cpp(844) : warning C4715: 'CGraphicView::Load' : not all control paths return a value
 Linking...
 
 

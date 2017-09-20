@@ -30,7 +30,7 @@ END_MESSAGE_MAP()
 CGraphicDoc::CGraphicDoc()
 {
 	// TODO: add one-time construction code here
-
+	flagOpen=0;
 }
 
 CGraphicDoc::~CGraphicDoc()

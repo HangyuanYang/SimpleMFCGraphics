@@ -27,7 +27,9 @@ protected: // create from serialization only
 public:
 	CGraphicDoc* GetDocument();
     CDC MemDC; //首先定义一个显示设备对象
-    CBitmap   MemBitmap;//定义一个位图对象
+    CBitmap MemBitmap;//定义一个位图对象
+	int nWidth;
+	int nHeight;
 	CPoint m_ptOrigin;
 	int m_nDrawType;
 	bool m_bDraw;
@@ -44,9 +46,17 @@ public:
 	int m_ZoomColumn;
 	int m_TranslateLevel;
 	int m_TranslateVertical;
-
+	float m_rTrans;
+	float m_cTrans;
+	bool isGray;
+	bool imageConfirm;
+	bool isAll;
 // Operations
 public:
+	void initial();
+	void NormalTrans();
+	void imageConfirmnation();
+	void imageDraw();
 	bool Load( LPCTSTR pszFileName );
 	int GetEncoderClsid(const WCHAR* , CLSID* );
 // Overrides
@@ -98,6 +108,9 @@ protected:
 	afx_msg void OnZoom();
 	afx_msg void OnTranslate();
 	afx_msg void OnGauss();
+	afx_msg void OnFileSave();
+	afx_msg void OnFileSaveAs();
+	afx_msg void OnFileNew();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

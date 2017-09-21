@@ -2,30 +2,32 @@
 
 [General Info]
 Version=1
-LastClass=CGraphicView
+LastClass=CConfirmDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
 LastPage=0
 
-ClassCount=9
+ClassCount=10
 Class1=CGraphicApp
 Class2=CGraphicDoc
 Class3=CGraphicView
 Class4=CMainFrame
 
-ResourceCount=6
-Resource1=IDD_ABOUTBOX
+ResourceCount=7
+Resource1=IDD_DLG_SETTING
 Class5=CAboutDlg
-Resource2=IDD_DLG_SETTING
+Resource2=IDD_DLG_ZOOM
 Class6=SettingDlg
-Resource3=IDR_MAINFRAME
+Resource3=IDD_ABOUTBOX
 Class7=CRotateDlg
-Resource4=IDD_DLG_ZOOM
+Resource4=IDR_MAINFRAME
 Class8=CZoomDlg
-Resource5=IDD_DLG_ROTATE
+Resource5=IDD_Dlg_TranslateTrans
 Class9=CTranslateTrans
-Resource6=IDD_Dlg_TranslateTrans
+Resource6=IDD_DLG_ROTATE
+Class10=CConfirmDlg
+Resource7=IDD_ConFirm
 
 [CLS:CGraphicApp]
 Type=0
@@ -57,7 +59,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_GAUSS
+LastObject=ID_FILE_NEW
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -227,13 +229,13 @@ HeaderFile=TranslateTrans.h
 ImplementationFile=TranslateTrans.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_TRANSLATELEVEL
+LastObject=CTranslateTrans
 VirtualFilter=dWC
 
 [DLG:IDD_Dlg_TranslateTrans]
 Type=1
 Class=CTranslateTrans
-ControlCount=7
+ControlCount=11
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_STATIC,static,1342308865
@@ -241,4 +243,24 @@ Control4=IDC_STATIC,static,1342308865
 Control5=IDC_STATIC,static,1342308865
 Control6=IDC_TRANSLATELEVEL,edit,1350639745
 Control7=IDC_TRANSLATEVERTICAL,edit,1350639745
+Control8=IDC_plus1,button,1342373897
+Control9=IDC_minus1,button,1342242825
+Control10=IDC_plus2,button,1342373897
+Control11=IDC_minus2,button,1342242825
+
+[DLG:IDD_ConFirm]
+Type=1
+Class=CConfirmDlg
+ControlCount=3
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,static,1342308865
+
+[CLS:CConfirmDlg]
+Type=0
+HeaderFile=ConfirmDlg.h
+ImplementationFile=ConfirmDlg.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CConfirmDlg
 

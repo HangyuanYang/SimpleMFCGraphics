@@ -10,6 +10,7 @@
 #define IDD_DLG_ROTATE                  137
 #define IDD_DLG_ZOOM                    138
 #define IDD_Dlg_TranslateTrans          139
+#define IDD_ConFirm                     140
 #define IDC_LINEWIDTH                   1000
 #define IDC_LINEMODEL1                  1002
 #define IDC_LINEMODEL2                  1003
@@ -25,6 +26,10 @@
 #define IDC_ZOOMCOLUMN                  1016
 #define IDC_TRANSLATELEVEL              1017
 #define IDC_TRANSLATEVERTICAL           1018
+#define IDC_plus1                       1027
+#define IDC_minus1                      1028
+#define IDC_plus2                       1029
+#define IDC_minus2                      1030
 #define IDM_LINE                        32771
 #define IDM_ELLIPSE                     32773
 #define IDM_DOT                         32774
@@ -51,9 +56,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        140
+#define _APS_NEXT_RESOURCE_VALUE        141
 #define _APS_NEXT_COMMAND_VALUE         32792
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

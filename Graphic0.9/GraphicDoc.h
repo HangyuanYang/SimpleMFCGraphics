@@ -27,6 +27,7 @@ public:
 	BITMAPFILEHEADER bf;//文件头
 	BITMAPINFOHEADER bi;  //信息头 
 	CString FilePath;
+	CString FileExt;
 // Operations
 public:
 
@@ -52,7 +53,6 @@ protected:
 protected:
 	//{{AFX_MSG(CGraphicDoc)
 	afx_msg void OnFileOpen();
-	afx_msg void OnFileSaveAs();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

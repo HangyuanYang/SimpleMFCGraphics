@@ -21,6 +21,8 @@ public:
 	enum { IDD = IDD_Dlg_TranslateTrans };
 	int		m_TranslateLevel;
 	int		m_TranslateVertical;
+	int		m_signal1;
+	int		m_signal2;
 	//}}AFX_DATA
 
 
@@ -36,7 +38,8 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CTranslateTrans)
-		// NOTE: the ClassWizard will add member functions here
+	afx_msg void OnSignal1();
+	afx_msg void OnSignal2();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -19,7 +19,7 @@ SettingDlg::SettingDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(SettingDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(SettingDlg)
-	m_LineWidth = 0;
+	m_LineWidth = 5;
 	m_LineStyle = 0;
 	m_nFILLMODEL = 1;
 	//}}AFX_DATA_INIT

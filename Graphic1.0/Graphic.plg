@@ -6,15 +6,15 @@
 --------------------Configuration: Graphic - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\11\AppData\Local\Temp\RSP650F.tmp" with contents
+Creating temporary file "C:\Users\11\AppData\Local\Temp\RSPF97E.tmp" with contents
 [
 /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "E:\study\东南大学\学科作业\MFC\Graphic\Graphic0.9\GraphicView.cpp"
 ]
-Creating command line "cl.exe @C:\Users\11\AppData\Local\Temp\RSP650F.tmp" 
-Creating temporary file "C:\Users\11\AppData\Local\Temp\RSP6510.tmp" with contents
+Creating command line "cl.exe @C:\Users\11\AppData\Local\Temp\RSPF97E.tmp" 
+Creating temporary file "C:\Users\11\AppData\Local\Temp\RSPF98E.tmp" with contents
 [
-/nologo /subsystem:windows /incremental:yes /pdb:"Debug/Graphic.pdb" /debug /machine:I386 /out:"Debug/Graphic.exe" /pdbtype:sept 
+cxcore.lib cv.lib ml.lib cvaux.lib highgui.lib cvcam.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/Graphic.pdb" /debug /machine:I386 /out:"Debug/Graphic.exe" /pdbtype:sept 
 ".\Debug\COLOR_DATA.obj"
 ".\Debug\ConfirmDlg.obj"
 ".\Debug\Graphic.obj"
@@ -27,8 +27,9 @@ Creating temporary file "C:\Users\11\AppData\Local\Temp\RSP6510.tmp" with conten
 ".\Debug\TranslateTrans.obj"
 ".\Debug\ZoomDlg.obj"
 ".\Debug\Graphic.res"
+".\Debug\TextDlg.obj"
 ]
-Creating command line "link.exe @C:\Users\11\AppData\Local\Temp\RSP6510.tmp"
+Creating command line "link.exe @C:\Users\11\AppData\Local\Temp\RSPF98E.tmp"
 <h3>Output Window</h3>
 Compiling...
 GraphicView.cpp

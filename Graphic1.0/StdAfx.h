@@ -27,6 +27,14 @@
 using namespace Gdiplus;
 #pragma comment(lib, "gdiplus.lib")
 
+//≈‰÷√Opencv1.0
+#include <cv.h>  
+#include <cxcore.h>  
+#include <highgui.h>  
+#pragma comment(lib, "cv.lib")  
+#pragma comment(lib, "cxcore.lib")  
+#pragma comment(lib, "highgui.lib")  
+
 
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes

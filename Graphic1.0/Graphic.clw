@@ -2,22 +2,22 @@
 
 [General Info]
 Version=1
-LastClass=CGraphicView
+LastClass=CTextDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
 LastPage=0
 
-ClassCount=10
+ClassCount=11
 Class1=CGraphicApp
 Class2=CGraphicDoc
 Class3=CGraphicView
 Class4=CMainFrame
 
-ResourceCount=7
+ResourceCount=8
 Resource1=IDD_DLG_ROTATE
 Class5=CAboutDlg
-Resource2=IDD_Dlg_TranslateTrans
+Resource2=IDD_ConFirm
 Class6=SettingDlg
 Resource3=IDD_DLG_SETTING
 Class7=CRotateDlg
@@ -27,7 +27,9 @@ Resource5=IDR_MAINFRAME
 Class9=CTranslateTrans
 Resource6=IDD_DLG_ZOOM
 Class10=CConfirmDlg
-Resource7=IDD_ConFirm
+Resource7=IDD_Dlg_TranslateTrans
+Class11=CTextDlg
+Resource8=IDD_DLG_TEXT
 
 [CLS:CGraphicApp]
 Type=0
@@ -59,7 +61,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=IDD_TEXT
+LastObject=IDD_GUN
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -98,11 +100,11 @@ Command10=ID_EDIT_UNDO
 Command11=ID_EDIT_CUT
 Command12=ID_EDIT_COPY
 Command13=ID_EDIT_PASTE
-Command14=IDM_SETTING
-Command15=IDM_COLOR
-Command16=ID_VIEW_TOOLBAR
-Command17=ID_VIEW_STATUS_BAR
-Command18=ID_APP_ABOUT
+Command14=ID_VIEW_TOOLBAR
+Command15=ID_VIEW_STATUS_BAR
+Command16=ID_APP_ABOUT
+Command17=IDM_SETTING
+Command18=IDM_COLOR
 Command19=IDM_DOT
 Command20=IDM_LINE
 Command21=IDM_RECTANGLE
@@ -114,14 +116,23 @@ Command26=IDM_BITMAPBRUSH
 Command27=IDM_TRANSPARENTBRUSH
 Command28=ID_ERASE
 Command29=ID_FILLAREA
-Command30=IDD_TEXT
-Command31=ID_ALL
-Command32=ID_ZOOM
-Command33=ID_ROTATE
-Command34=ID_TRANSLATE
-Command35=ID_GRAY
-Command36=ID_GAUSS
-CommandCount=36
+Command30=IDD_GUN
+Command31=IDD_TEXT
+Command32=IDD_LEVELFILP
+Command33=IDD_VERTICALFILP
+Command34=ID_ALL
+Command35=ID_TRANSLATE
+Command36=ID_ZOOM
+Command37=ID_ROTATE
+Command38=ID_GRAY
+Command39=IDD_NOT
+Command40=ID_GAUSS
+Command41=IDD_MEDIAN
+Command42=IDD_BILATERAL
+Command43=IDD_SIMPLE_NO_SCALE
+Command44=IDD_LAPLACE
+Command45=IDD_SOBEL
+CommandCount=45
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -264,4 +275,26 @@ ImplementationFile=ConfirmDlg.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=CConfirmDlg
+
+[DLG:IDD_DLG_TEXT]
+Type=1
+Class=CTextDlg
+ControlCount=8
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_TEXTX,static,1342308865
+Control4=IDC_TEXTY,static,1342308865
+Control5=IDC_EDITX,edit,1350639745
+Control6=IDC_EDITY,edit,1350639745
+Control7=IDC_EDITCONTENT,edit,1350631558
+Control8=IDC_STATIC,static,1342308865
+
+[CLS:CTextDlg]
+Type=0
+HeaderFile=TextDlg.h
+ImplementationFile=TextDlg.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=IDC_EDIT1
+VirtualFilter=dWC
 

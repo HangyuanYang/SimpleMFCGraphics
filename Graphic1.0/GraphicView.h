@@ -61,8 +61,11 @@ public:
 public:
 	void initial();
 	void NormalTrans();
+	void CopyToMemDC();
 	void imageConfirmnation();
 	void imageDraw();
+	void sprayGun(CPoint);
+
 	bool Load( LPCTSTR pszFileName );
 	int GetEncoderClsid(const WCHAR* , CLSID* );
 // Overrides
@@ -119,6 +122,15 @@ protected:
 	afx_msg void OnFileNew();
 	afx_msg void OnText();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnMedian();
+	afx_msg void OnBilateral();
+	afx_msg void OnSimpleNoScale();
+	afx_msg void OnNot();
+	afx_msg void OnLevelfilp();
+	afx_msg void OnVerticalfilp();
+	afx_msg void OnLaplace();
+	afx_msg void OnSobel();
+	afx_msg void OnGun();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

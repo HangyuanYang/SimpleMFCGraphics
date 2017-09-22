@@ -11,7 +11,9 @@
 #include "ZoomDlg.h"
 #include "ConfirmDlg.h"
 #include "TranslateTrans.h"
+#include "TextDlg.h"
 #include "COLOR_DATA.h"
+#include <cstdlib>
 #include <vector>
 #include <cmath>
 
@@ -59,8 +61,17 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_COMMAND(ID_FILE_SAVE_AS, OnFileSaveAs)
 	ON_COMMAND(ID_FILE_NEW, OnFileNew)
 	ON_COMMAND(IDD_TEXT, OnText)
-	ON_WM_LBUTTONDBLCLK()
 	ON_WM_CREATE()
+	ON_COMMAND(IDD_MEDIAN, OnMedian)
+	ON_COMMAND(IDD_BILATERAL, OnBilateral)
+	ON_COMMAND(IDD_SIMPLE_NO_SCALE, OnSimpleNoScale)
+	ON_COMMAND(IDD_NOT, OnNot)
+	ON_COMMAND(IDD_LEVELFILP, OnLevelfilp)
+	ON_COMMAND(IDD_VERTICALFILP, OnVerticalfilp)
+	ON_COMMAND(IDD_LAPLACE, OnLaplace)
+	ON_COMMAND(IDD_SOBEL, OnSobel)
+	ON_WM_LBUTTONDBLCLK()
+	ON_COMMAND(IDD_GUN, OnGun)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -100,10 +111,16 @@ CGraphicView::~CGraphicView()
 
 void CGraphicView::initial(){
 	//initial
-	m_nRotateModel=0;
+	m_nDrawType=0;
+	m_bDraw=false;
+	m_LineStyle=0;
+	m_LineWidth=5;
+	m_Color=RGB(50,200,100);
+	m_nFILLMODEL=1;
 	m_nAngle=0;
-	imagePointX = 0;
-	imagePointY = 0;
+	m_nRotateModel=0;
+	imagePointX=0;
+	imagePointY=0;
 	m_TranslateLevel=0;
 	m_TranslateVertical=0;
 	m_rTrans=1;
@@ -175,8 +192,8 @@ BOOL CGraphicView::OnEraseBkgnd(CDC* pDC)
 	// TODO: Add your message handler code here and/or call default
 	
 	// nothing
-	return CView::OnEraseBkgnd(pDC);
-	//return true;
+	//return CView::OnEraseBkgnd(pDC);
+	return true;
 }
 
 int CGraphicView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -236,7 +253,7 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
     
 	
 	//获取屏幕DC
-	HDC hDC=::GetDC(NULL);
+	HDC hDC=pDC->GetSafeHdc();
 	//获取当前点的RGB值
 	COLORREF clr=::GetPixel(hDC, point.x, point.y); 
 	Gdiplus::Graphics graphics(MemDC.GetSafeHdc());
@@ -263,7 +280,7 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
 		//这个填充能用。。就是有点卡
 		if(clr!=m_Color){
 			MemDC.SelectObject(brush);									
-			ExtFloodFill(MemDC,point.x,point.y,clr,FLOODFILLSURFACE);	
+			ExtFloodFill(MemDC,point.x,point.y,clr,FLOODFILLSURFACE);
 			pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 		}
 		break;
@@ -325,8 +342,8 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 	
     //画出线宽大于1的实线/虚线/点线/点划线/双点划线
 	LOGBRUSH logBrush;  
-	logBrush.lbStyle = BS_SOLID;  
-	logBrush.lbColor = m_Color;  
+	logBrush.lbStyle = BS_SOLID; //画刷样式
+	logBrush.lbColor = m_Color;  //画刷颜色
 	//创建实线画笔
 	CPen pen1(m_LineStyle,m_LineWidth,m_Color);
 	//创建虚线画笔
@@ -427,8 +444,8 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 
     //画出线宽大于1的实线/虚线/点线/点划线/双点划线
 	LOGBRUSH logBrush;  
-	logBrush.lbStyle = BS_SOLID;  
-	logBrush.lbColor = m_Color;  
+	logBrush.lbStyle = BS_SOLID; //画刷样式
+	logBrush.lbColor = m_Color;  //画刷颜色
 	//创建实线画笔
 	CPen pen1(m_LineStyle,m_LineWidth,m_Color);
 	//创建虚线画笔
@@ -521,13 +538,16 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 			//恢复先前的画刷
 			pDC->SelectObject(pOldBrush);
 		}
+		if(m_nDrawType==12){
+		  sprayGun(point);		
+		}
 	}
 	//恢复设备描述
 	CView::OnMouseMove(nFlags, point);
 	ReleaseDC(pDC);
 }
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CGraphicView::OnSetting(){
 	//TODO: Add your command handler code here
 	SettingDlg dlg;
@@ -549,6 +569,97 @@ void CGraphicView::OnColor()  {
 	if(IDOK==dlg.DoModal()){
 		m_Color=dlg.m_cc.rgbResult; 
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//几何变换
+void CGraphicView::OnLevelfilp() 
+{
+	// TODO: Add your command handler code here
+	if(imageConfirm){
+		AfxMessageBox("图像已固定！");
+		return;
+	}
+	CDC* pDC = GetDC();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc);
+
+	if(pDoc->flagOpen==0)
+	{
+	  AfxMessageBox("请先打开图片!");
+    }
+	else
+	{
+	  m_pImg->RotateFlip(RotateFlipType(RotateNoneFlipX));
+	  
+	  NormalTrans();
+	  pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
+	  //平移
+	  graphics.TranslateTransform((float)m_TranslateLevel, (float)m_TranslateVertical); 
+	  //缩放
+	  graphics.ScaleTransform(m_rTrans,m_cTrans);
+  	  //源点移动到旋转中心
+	  graphics.TranslateTransform(1.0f*(imagePointX+m_ZoomRow/2),1.0f*(imagePointY+m_ZoomColumn/2));
+	  //旋转
+	  if(!m_nRotateModel)graphics.RotateTransform(1.0f*m_nAngle); 
+	  else graphics.RotateTransform(1.0f*(1080-m_nAngle));
+	  //还原源点	
+	  graphics.TranslateTransform(1.0f*(0-(imagePointX+m_ZoomRow/2)), 1.0f*(0-(imagePointY+m_ZoomColumn/2)));
+
+	  graphics.DrawImage(m_pImg, imagePointX,imagePointY); // 绘制图像
+	
+      
+	}
+	ReleaseDC(pDC);
+}
+
+void CGraphicView::OnVerticalfilp() 
+{
+	// TODO: Add your command handler code here
+	// TODO: Add your command handler code here
+	if(imageConfirm){
+		AfxMessageBox("图像已固定！");
+		return;
+	}
+	CDC* pDC = GetDC();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+
+	CGraphicDoc* pDoc = GetDocument();//得到文档指针,注意,文档的命名是与工程名有关的!!不同的程序不一样.
+	ASSERT_VALID(pDoc);
+
+	if(pDoc->flagOpen==0)
+	{
+	  AfxMessageBox("请先打开图片!");
+    }
+	else
+	{
+	  m_pImg->RotateFlip(RotateFlipType(RotateNoneFlipY));
+	  
+	  NormalTrans();
+	  pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
+	  //平移
+	  graphics.TranslateTransform((float)m_TranslateLevel, (float)m_TranslateVertical); 
+	  //缩放
+	  graphics.ScaleTransform(m_rTrans,m_cTrans);
+  	  //源点移动到旋转中心
+	  graphics.TranslateTransform(1.0f*(imagePointX+m_ZoomRow/2),1.0f*(imagePointY+m_ZoomColumn/2));
+	  //旋转
+	  if(!m_nRotateModel)graphics.RotateTransform(1.0f*m_nAngle); 
+	  else graphics.RotateTransform(1.0f*(1080-m_nAngle));
+	  //还原源点	
+	  graphics.TranslateTransform(1.0f*(0-(imagePointX+m_ZoomRow/2)), 1.0f*(0-(imagePointY+m_ZoomColumn/2)));
+
+	  graphics.DrawImage(m_pImg, imagePointX,imagePointY); // 绘制图像
+	
+      
+	}
+	ReleaseDC(pDC);
 }
 
 void CGraphicView::OnAll() 
@@ -794,12 +905,56 @@ void CGraphicView::OnGray()
 
 	ReleaseDC(pDC);
 }
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//图像处理代码高度耦合---------------------------------
 //高斯平滑  
 void CGraphicView::OnGauss()   
-{  
+{
 	// TODO: Add your command handler code here
+	CDC *pDC=GetDC(); 
+	HDC hDC= pDC ->GetSafeHdc();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+ 
+//储存临时图片用于平滑画图
+	CDC temCDC;
+	CBitmap bm;
+	bm.CreateCompatibleBitmap(pDC,nWidth,nHeight);
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	temCDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit=temCDC.SelectObject(&bm);
+	temCDC.BitBlt(0, 0 ,rect.Width(),rect.Height(), pDC, 0, 0, SRCCOPY); 
+
+	CString filepath("temporary.bmp");
+	CFile file;
+	if(GetFileAttributes(filepath)!=-1){
+	   file.Remove(filepath);
+	}
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filepath);
+    Bitmap bmp((HBITMAP)bm, NULL);//定义bitmap
+    CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+    bmp.Save(pBuf, &Clsid, NULL);
+	IplImage* img_src = 0;  
+    char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
+    img_src = cvLoadImage(pictureImage, 1);  
+	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
+	cvSmooth(img_src,img_dst,CV_GAUSSIAN, 3, 3); 
+	CvvImage img;
+	img.CopyOf(img_dst); //复制图片
+	img.DrawToHDC(hDC,&rect); // 将图片绘制到显示控件的指定区域内   
+	temCDC.DeleteDC();
+    bm.DeleteObject();
+	
+
+/////////////////////////////////////////////
+	/*slow
 	CDC *pDC=GetDC();
 	Graphics graphics(MemDC.GetSafeHdc());
     CRect rect;
@@ -845,10 +1000,302 @@ void CGraphicView::OnGauss()
 	    pDC->SetPixel(x,y,*(pCopy+x*rect.Width()+y));
     
     delete[] pCopy;
-	ReleaseDC(pDC);
+	ReleaseDC(pDC);*/
+
+	CopyToMemDC();
 }
 
-///////////////////////////////////////////
+//中值滤波
+void CGraphicView::OnMedian() 
+{
+	// TODO: Add your command handler code here
+	CDC *pDC=GetDC(); 
+	HDC hDC= pDC ->GetSafeHdc();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+ 
+//储存临时图片用于平滑画图
+	CDC temCDC;
+	CBitmap bm;
+	bm.CreateCompatibleBitmap(pDC,nWidth,nHeight);
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	temCDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit=temCDC.SelectObject(&bm);
+	temCDC.BitBlt(0, 0 ,rect.Width(),rect.Height(), pDC, 0, 0, SRCCOPY); 
+
+	CString filepath("temporary.bmp");
+	CFile file;
+	if(GetFileAttributes(filepath)!=-1){
+	   file.Remove(filepath);
+	}
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filepath);
+    Bitmap bmp((HBITMAP)bm, NULL);//定义bitmap
+    CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+    bmp.Save(pBuf, &Clsid, NULL);
+	IplImage* img_src = 0;  
+    char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
+    img_src = cvLoadImage(pictureImage, 1);  
+	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
+	cvSmooth(img_src,img_dst,CV_MEDIAN, 3, 3); 
+	CvvImage img;
+	img.CopyOf(img_dst); //复制图片
+	img.DrawToHDC(hDC,&rect); // 将图片绘制到显示控件的指定区域内   
+	temCDC.DeleteDC();
+    bm.DeleteObject();
+
+	CopyToMemDC();
+}
+
+//双向滤波
+void CGraphicView::OnBilateral() 
+{
+	// TODO: Add your command handler code here
+	CDC *pDC=GetDC(); 
+	HDC hDC= pDC ->GetSafeHdc();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+ 
+//储存临时图片用于平滑画图
+	CDC temCDC;
+	CBitmap bm;
+	bm.CreateCompatibleBitmap(pDC,nWidth,nHeight);
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	temCDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit=temCDC.SelectObject(&bm);
+	temCDC.BitBlt(0, 0 ,rect.Width(),rect.Height(), pDC, 0, 0, SRCCOPY); 
+
+	CString filepath("temporary.bmp");
+	CFile file;
+	if(GetFileAttributes(filepath)!=-1){
+	   file.Remove(filepath);
+	}
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filepath);
+    Bitmap bmp((HBITMAP)bm, NULL);//定义bitmap
+    CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+    bmp.Save(pBuf, &Clsid, NULL);
+	IplImage* img_src = 0;  
+    char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
+    img_src = cvLoadImage(pictureImage, 1);  
+	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
+	cvSmooth(img_src,img_dst,CV_BILATERAL, 3, 3); 
+	CvvImage img;
+	img.CopyOf(img_dst); //复制图片
+	img.DrawToHDC(hDC,&rect); // 将图片绘制到显示控件的指定区域内   
+	temCDC.DeleteDC();
+    bm.DeleteObject();
+
+	CopyToMemDC();
+}
+
+void CGraphicView::OnSimpleNoScale() 
+{
+	// TODO: Add your command handler code here
+	CDC *pDC=GetDC(); 
+	HDC hDC= pDC ->GetSafeHdc();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+ 
+//储存临时图片用于平滑画图
+	CDC temCDC;
+	CBitmap bm;
+	bm.CreateCompatibleBitmap(pDC,nWidth,nHeight);
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	temCDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit=temCDC.SelectObject(&bm);
+	temCDC.BitBlt(0, 0 ,rect.Width(),rect.Height(), pDC, 0, 0, SRCCOPY); 
+
+	CString filepath("temporary.bmp");
+	CFile file;
+	if(GetFileAttributes(filepath)!=-1){
+	   file.Remove(filepath);
+	}
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filepath);
+    Bitmap bmp((HBITMAP)bm, NULL);//定义bitmap
+    CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+    bmp.Save(pBuf, &Clsid, NULL);
+	IplImage* img_src = 0;  
+    char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
+    img_src = cvLoadImage(pictureImage, 1);  
+	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
+	cvSmooth(img_src,img_dst,CV_BLUR_NO_SCALE, 3, 3); 
+	CvvImage img;
+	img.CopyOf(img_dst); //复制图片
+	img.DrawToHDC(hDC,&rect); // 将图片绘制到显示控件的指定区域内   
+	temCDC.DeleteDC();
+    bm.DeleteObject();
+
+	CopyToMemDC();
+}
+
+//反色
+void CGraphicView::OnNot() 
+{
+	// TODO: Add your command handler code here
+	CDC *pDC=GetDC(); 
+	HDC hDC= pDC ->GetSafeHdc();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+ 
+//储存临时图片用于反色画图
+	CDC temCDC;
+	CBitmap bm;
+	bm.CreateCompatibleBitmap(pDC,nWidth,nHeight);
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	temCDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit=temCDC.SelectObject(&bm);
+	temCDC.BitBlt(0, 0 ,rect.Width(),rect.Height(), pDC, 0, 0, SRCCOPY); 
+
+	CString filepath("temporary.bmp");
+	CFile file;
+	if(GetFileAttributes(filepath)!=-1){
+	   file.Remove(filepath);
+	}
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filepath);
+    Bitmap bmp((HBITMAP)bm, NULL);//定义bitmap
+    CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+    bmp.Save(pBuf, &Clsid, NULL);
+	IplImage* img_src = 0;  
+    char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
+    img_src = cvLoadImage(pictureImage, 1);  
+	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
+	cvNot(img_src,img_dst);
+	CvvImage img;
+	img.CopyOf(img_dst); //复制图片
+	img.DrawToHDC(hDC,&rect); // 将图片绘制到显示控件的指定区域内   
+	temCDC.DeleteDC();
+    bm.DeleteObject();
+
+	CopyToMemDC();
+}
+
+//LAPLACE图像锐化
+void CGraphicView::OnLaplace() 
+{
+	// TODO: Add your command handler code here
+	CDC *pDC=GetDC(); 
+	HDC hDC= pDC ->GetSafeHdc();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+ 
+//储存临时图片用于锐化画图
+	CDC temCDC;
+	CBitmap bm;
+	bm.CreateCompatibleBitmap(pDC,nWidth,nHeight);
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	temCDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit=temCDC.SelectObject(&bm);
+	temCDC.BitBlt(0, 0 ,rect.Width(),rect.Height(), pDC, 0, 0, SRCCOPY); 
+
+	CString filepath("temporary.bmp");
+	CFile file;
+	if(GetFileAttributes(filepath)!=-1){
+	   file.Remove(filepath);
+	}
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filepath);
+    Bitmap bmp((HBITMAP)bm, NULL);//定义bitmap
+    CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+    bmp.Save(pBuf, &Clsid, NULL);
+    IplImage* img_src = 0;  
+    char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
+    img_src = cvLoadImage(pictureImage, 1);  
+	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_32F,3);//创建一个size为image,三通道8位的彩色图
+
+	cvLaplace(img_src,img_dst);
+	
+	CvvImage img;
+	img.CopyOf(img_dst); //复制图片
+	img.DrawToHDC(hDC,&rect); // 将图片绘制到显示控件的指定区域内   
+	temCDC.DeleteDC();
+    bm.DeleteObject();
+
+	CopyToMemDC();
+}
+
+void CGraphicView::OnSobel() 
+{
+	// TODO: Add your command handler code here
+	CDC *pDC=GetDC(); 
+	HDC hDC= pDC ->GetSafeHdc();
+	Graphics graphics(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+ 
+//储存临时图片用于锐化画图
+	CDC temCDC;
+	CBitmap bm;
+	bm.CreateCompatibleBitmap(pDC,nWidth,nHeight);
+
+	//随后建立与屏幕显示兼容的内存显示设备
+	temCDC.CreateCompatibleDC(pDC);
+	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
+	//将位图选入到内存显示设备中
+	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
+	CBitmap *pOldBit=temCDC.SelectObject(&bm);
+	temCDC.BitBlt(0, 0 ,rect.Width(),rect.Height(), pDC, 0, 0, SRCCOPY); 
+
+	CString filepath("temporary.bmp");
+	CFile file;
+	if(GetFileAttributes(filepath)!=-1){
+	   file.Remove(filepath);
+	}
+	USES_CONVERSION;      //将cstring转化为const wchar*
+    WCHAR* pBuf = T2W((LPCTSTR)filepath);
+    Bitmap bmp((HBITMAP)bm, NULL);//定义bitmap
+    CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+    bmp.Save(pBuf, &Clsid, NULL);
+    IplImage* img_src = 0;  
+    char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
+    img_src = cvLoadImage(pictureImage, 1);  
+	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_32F,3);//创建一个size为image,三通道8位的彩色图
+
+	cvSobel(img_src,img_dst,1,0,3);
+	
+	CvvImage img;
+	img.CopyOf(img_dst); //复制图片
+	img.DrawToHDC(hDC,&rect); // 将图片绘制到显示控件的指定区域内   
+	temCDC.DeleteDC();
+    bm.DeleteObject();
+
+	CopyToMemDC();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CGraphicView::imageDraw(){
 	CDC* pDC = GetDC();
 	Graphics graphics(MemDC.GetSafeHdc());
@@ -856,19 +1303,8 @@ void CGraphicView::imageDraw(){
     this->GetClientRect(&rect);
 
 	if(isAll){
-	  MemDC.DeleteDC();
-      MemBitmap.DeleteObject();
-	  nWidth=rect.Width();
-	  nHeight=rect.Height();
-	  MemBitmap.CreateCompatibleBitmap(pDC,nWidth,nHeight);
 
-	  //随后建立与屏幕显示兼容的内存显示设备
-	  MemDC.CreateCompatibleDC(pDC);
-	  //下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
-	  //将位图选入到内存显示设备中
-	  //只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
-	  CBitmap *pOldBit=MemDC.SelectObject(&MemBitmap);
-	  MemDC.BitBlt(0, 0 ,nWidth,nHeight,pDC,0,0,SRCCOPY);
+	  CopyToMemDC();
 
 	  ReleaseDC(pDC);
 	  return;
@@ -1013,12 +1449,28 @@ void CGraphicView::OnFillarea()
 	m_nDrawType=11;
 }
 
+void CGraphicView::OnGun() 
+{
+	// TODO: Add your command handler code here
+	imageConfirmnation();
+
+	m_nDrawType=12;
+}
+
 void CGraphicView::OnText() 
 {
 	// TODO: Add your command handler code here
-
-
-
+	CDC* pDC = GetDC();
+	Graphics graphics1(MemDC.GetSafeHdc());
+	Graphics graphics2(pDC->GetSafeHdc());
+    CRect rect;
+    this->GetClientRect(&rect);
+    CTextDlg  dlg;
+	if(dlg.DoModal()==IDOK)
+		if(dlg.m_Textx>rect.Width()||dlg.m_Texty>rect.Height()){
+			AfxMessageBox("Out of Range!");
+		}else pDC->TextOut (dlg.m_Textx,dlg.m_Texty,dlg.m_Content);
+	
 
 /*	CFontDialog dlg; 
     if(IDOK==dlg.DoModal()) 
@@ -1067,13 +1519,14 @@ void CGraphicView::OnDraw(CDC* pDC)
         MemDC.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,255,255));
 	}else{
 		pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY); 
-		if(rect.Width()>nWidth&&rect.Height()>nHeight){
+		if(rect.Width()>nWidth&&rect.Height()>nHeight)CopyToMemDC();
+		else if(rect.Width()>nWidth||rect.Height()>nHeight){
 			MemDC.DeleteDC();
 			MemBitmap.DeleteObject();
-			nWidth=rect.Width();
-			nHeight=rect.Height();
+			nWidth=max(nWidth,rect.Width());
+			nHeight=max(nHeight,rect.Height());
 			MemBitmap.CreateCompatibleBitmap(pDC,nWidth,nHeight);
-
+	
 			//随后建立与屏幕显示兼容的内存显示设备
 			MemDC.CreateCompatibleDC(pDC);
 			//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
@@ -1081,8 +1534,10 @@ void CGraphicView::OnDraw(CDC* pDC)
 			//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
 			CBitmap *pOldBit=MemDC.SelectObject(&MemBitmap);
 			MemDC.BitBlt(0, 0 ,nWidth,nHeight, pDC, 0, 0, SRCCOPY); 
+
 		}
 	}
+	pDC->TextOut (rect.Width()-260,rect.Height()-15,"Hello，Welcome to SimpleMFCGraphic！");
 //    MemDC.MoveTo(0,0);
 //    MemDC.LineTo(100,100);
 
@@ -1303,20 +1758,7 @@ void CGraphicView::OnFileSave()
     CRect rect;
     this->GetClientRect(&rect);
 
-	MemDC.DeleteDC();
-	MemBitmap.DeleteObject();
-	nWidth=rect.Width();
-	nHeight=rect.Height();
-	MemBitmap.CreateCompatibleBitmap(pDC,nWidth,nHeight);
-
-	//随后建立与屏幕显示兼容的内存显示设备
-	MemDC.CreateCompatibleDC(pDC);
-	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
-	//将位图选入到内存显示设备中
-	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
-	CBitmap *pOldBit=MemDC.SelectObject(&MemBitmap);
-	MemDC.BitBlt(0, 0 ,nWidth,nHeight, pDC, 0, 0, SRCCOPY); 
-
+	CopyToMemDC();
 
 	CFile file;
 	file.Remove(pDoc->FilePath);
@@ -1344,21 +1786,10 @@ void CGraphicView::OnFileSaveAs()
     CRect rect;
     this->GetClientRect(&rect);
 
-	MemDC.DeleteDC();
-	MemBitmap.DeleteObject();
-	nWidth=rect.Width();
-	nHeight=rect.Height();
-	MemBitmap.CreateCompatibleBitmap(pDC,nWidth,nHeight);
-
-	//随后建立与屏幕显示兼容的内存显示设备
-	MemDC.CreateCompatibleDC(pDC);
-	//下面建立一个与屏幕显示兼容的位图，至于位图的大小嘛，可以用窗口的大小
-	//将位图选入到内存显示设备中
-	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
-	CBitmap *pOldBit=MemDC.SelectObject(&MemBitmap);
-	MemDC.BitBlt(0, 0 ,nWidth,nHeight, pDC, 0, 0, SRCCOPY); 
-
 	if (dlg.DoModal()!=IDOK)return;
+
+	CopyToMemDC();
+
 	CString filepath=dlg.GetPathName();
 	CString fileExt=dlg.GetFileExt();
 	CFile file;
@@ -1391,6 +1822,18 @@ void CGraphicView::OnFileNew()
 	pDoc->FileExt="";
 	pDoc->flagOpen=0;
 
+	CopyToMemDC();
+
+	MemDC.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,255,255));
+	pDC->FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,255,255));
+
+	ReleaseDC(pDC);
+}
+
+void CGraphicView::CopyToMemDC(){
+	CDC *pDC=GetDC();
+    CRect rect;
+    this->GetClientRect(&rect);
 
 	MemDC.DeleteDC();
 	MemBitmap.DeleteObject();
@@ -1404,8 +1847,24 @@ void CGraphicView::OnFileNew()
 	//将位图选入到内存显示设备中
 	//只有选入了位图的内存显示设备才有地方绘图，画到指定的位图上
 	CBitmap *pOldBit=MemDC.SelectObject(&MemBitmap);
-	MemDC.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,255,255));
-	pDC->FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,255,255));
+	MemDC.BitBlt(0, 0 ,nWidth,nHeight, pDC, 0, 0, SRCCOPY); 
 
 	ReleaseDC(pDC);
+}
+
+//喷枪  极坐标参数为随机变量
+void CGraphicView::sprayGun(CPoint point){
+   CDC *pDC=GetDC();
+   srand(time(0));
+   float r,c;
+   for(int i=0;i<30*m_LineWidth;i++){
+     c=(float)(rand()%36000)/100;
+     r=(float)(rand()%(m_LineWidth*200))/100;
+     CPoint randompoint;
+     randompoint.x=(int)r*cos(c)+point.x;
+     randompoint.y=(int)r*sin(c)+point.y;
+	 MemDC.SetPixel(randompoint,m_Color);
+	 pDC->SetPixel(randompoint,m_Color);
+   }
+   ReleaseDC(pDC);
 }

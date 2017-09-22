@@ -11,6 +11,7 @@
 #define IDD_DLG_ZOOM                    138
 #define IDD_Dlg_TranslateTrans          139
 #define IDD_ConFirm                     140
+#define IDD_DLG_TEXT                    141
 #define IDC_LINEWIDTH                   1000
 #define IDC_LINEMODEL1                  1002
 #define IDC_LINEMODEL2                  1003
@@ -30,6 +31,11 @@
 #define IDC_minus1                      1028
 #define IDC_plus2                       1029
 #define IDC_minus2                      1030
+#define IDC_TEXTX                       1031
+#define IDC_TEXTY                       1032
+#define IDC_EDITX                       1033
+#define IDC_EDITY                       1034
+#define IDC_EDITCONTENT                 1035
 #define IDM_LINE                        32771
 #define IDM_ELLIPSE                     32773
 #define IDM_DOT                         32774
@@ -51,15 +57,24 @@
 #define ID_ZOOM                         32790
 #define ID_GAUSS                        32791
 #define IDD_TEXT                        32792
+#define IDD_MEDIAN                      32793
+#define IDD_BILATERAL                   32794
+#define IDD_SIMPLE_NO_SCALE             32795
+#define IDD_NOT                         32796
+#define IDD_LEVELFILP                   32797
+#define IDD_VERTICALFILP                32798
+#define IDD_LAPLACE                     32801
+#define IDD_SOBEL                       32802
+#define IDD_GUN                         32803
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        141
-#define _APS_NEXT_COMMAND_VALUE         32793
-#define _APS_NEXT_CONTROL_VALUE         1031
+#define _APS_NEXT_RESOURCE_VALUE        142
+#define _APS_NEXT_COMMAND_VALUE         32804
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

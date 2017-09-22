@@ -128,8 +128,6 @@ BEGIN
         MENUITEM "剪切(&T)\tCtrl+X",            ID_EDIT_CUT
         MENUITEM "复制(&C)\tCtrl+C",            ID_EDIT_COPY
         MENUITEM "粘贴(&P)\tCtrl+V",            ID_EDIT_PASTE
-        MENUITEM "设置",                        IDM_SETTING
-        MENUITEM "颜色",                        IDM_COLOR
     END
     POPUP "查看(&V)"
     BEGIN
@@ -140,6 +138,11 @@ BEGIN
     BEGIN
         MENUITEM "关于 Graphic(&A)...",         ID_APP_ABOUT
     END
+    POPUP "样式"
+    BEGIN
+        MENUITEM "设置",                        IDM_SETTING
+        MENUITEM "颜色",                        IDM_COLOR
+    END
     POPUP "绘图"
     BEGIN
         MENUITEM "点",                          IDM_DOT
@@ -148,32 +151,47 @@ BEGIN
         MENUITEM "椭圆",                        IDM_ELLIPSE
         MENUITEM "扇形",                        IDM_SECTOR
         MENUITEM "折线",                        IDM_Polyline
-    END
-    POPUP "画刷"
-    BEGIN
-        MENUITEM "简单画刷",                    IDM_SIMPLEBRUSH
-        MENUITEM "位图画刷",                    IDM_BITMAPBRUSH
-        MENUITEM "透明画刷",                    IDM_TRANSPARENTBRUSH
+        POPUP "画刷"
+        BEGIN
+            MENUITEM "简单画刷",                    IDM_SIMPLEBRUSH
+            MENUITEM "位图画刷",                    IDM_BITMAPBRUSH
+            MENUITEM "透明画刷",                    IDM_TRANSPARENTBRUSH
+        END
     END
     POPUP "工具"
     BEGIN
         MENUITEM "橡皮擦",                      ID_ERASE
         MENUITEM "填充",                        ID_FILLAREA
+        MENUITEM "喷枪",                        IDD_GUN
         MENUITEM "文本框",                      IDD_TEXT
     END
     POPUP "几何变换"
     BEGIN
+        POPUP "翻转"
+        BEGIN
+            MENUITEM "水平翻转",                    IDD_LEVELFILP
+            MENUITEM "竖直翻转",                    IDD_VERTICALFILP
+        END
         MENUITEM "平铺",                        ID_ALL
+        MENUITEM "平移",                        ID_TRANSLATE
         MENUITEM "缩放",                        ID_ZOOM
         MENUITEM "旋转",                        ID_ROTATE
-        MENUITEM "平移",                        ID_TRANSLATE
         MENUITEM "灰化",                        ID_GRAY
     END
     POPUP "图像增强"
     BEGIN
+        MENUITEM "反色",                        IDD_NOT
         POPUP "图像平滑"
         BEGIN
             MENUITEM "高斯平滑",                    ID_GAUSS
+            MENUITEM "中值滤波",                    IDD_MEDIAN
+            MENUITEM "双向滤波",                    IDD_BILATERAL
+            MENUITEM "简单无放缩变换平滑",          IDD_SIMPLE_NO_SCALE
+        END
+        POPUP "图像锐化"
+        BEGIN
+            MENUITEM "Laplace",                     IDD_LAPLACE
+            MENUITEM "Sobel",                       IDD_SOBEL
         END
     END
 END
@@ -315,6 +333,24 @@ BEGIN
                     SS_CENTERIMAGE
 END
 
+IDD_DLG_TEXT DIALOGEX 0, 0, 187, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 10, "System"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,73,75,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,130,75,50,14
+    CTEXT           "水平坐标",IDC_TEXTX,19,15,33,8,SS_CENTERIMAGE
+    CTEXT           "竖直坐标",IDC_TEXTY,19,52,33,8,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITX,16,31,47,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER,WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDITY,16,66,45,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER,WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDITCONTENT,75,28,95,41,ES_RIGHT | ES_MULTILINE | 
+                    ES_AUTOHSCROLL,WS_EX_STATICEDGE
+    CTEXT           "文本内容",IDC_STATIC,78,13,84,9,SS_CENTERIMAGE
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -409,6 +445,14 @@ BEGIN
     END
 
     IDD_ConFirm, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 89
+    END
+
+    IDD_DLG_TEXT, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 180

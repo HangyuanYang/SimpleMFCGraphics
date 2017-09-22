@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CConfirmDlg
+LastClass=CGraphicView
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
@@ -15,17 +15,17 @@ Class3=CGraphicView
 Class4=CMainFrame
 
 ResourceCount=7
-Resource1=IDD_DLG_SETTING
+Resource1=IDD_DLG_ROTATE
 Class5=CAboutDlg
-Resource2=IDD_DLG_ZOOM
+Resource2=IDD_Dlg_TranslateTrans
 Class6=SettingDlg
-Resource3=IDD_ABOUTBOX
+Resource3=IDD_DLG_SETTING
 Class7=CRotateDlg
-Resource4=IDR_MAINFRAME
+Resource4=IDD_ABOUTBOX
 Class8=CZoomDlg
-Resource5=IDD_Dlg_TranslateTrans
+Resource5=IDR_MAINFRAME
 Class9=CTranslateTrans
-Resource6=IDD_DLG_ROTATE
+Resource6=IDD_DLG_ZOOM
 Class10=CConfirmDlg
 Resource7=IDD_ConFirm
 
@@ -59,7 +59,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_FILE_NEW
+LastObject=IDD_TEXT
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -114,13 +114,14 @@ Command26=IDM_BITMAPBRUSH
 Command27=IDM_TRANSPARENTBRUSH
 Command28=ID_ERASE
 Command29=ID_FILLAREA
-Command30=ID_ALL
-Command31=ID_ZOOM
-Command32=ID_ROTATE
-Command33=ID_TRANSLATE
-Command34=ID_GRAY
-Command35=ID_GAUSS
-CommandCount=35
+Command30=IDD_TEXT
+Command31=ID_ALL
+Command32=ID_ZOOM
+Command33=ID_ROTATE
+Command34=ID_TRANSLATE
+Command35=ID_GRAY
+Command36=ID_GAUSS
+CommandCount=36
 
 [ACL:IDR_MAINFRAME]
 Type=1

@@ -11,6 +11,9 @@
 #include "ZoomDlg.h"
 #include "ConfirmDlg.h"
 #include "TranslateTrans.h"
+#include "COLOR_DATA.h"
+#include <vector>
+#include <cmath>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,6 +23,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 	using namespace Gdiplus;
+	using namespace std;
 /////////////////////////////////////////////////////////////////////////////
 // CGraphicView
 
@@ -53,8 +57,10 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_COMMAND(ID_GAUSS, OnGauss)
 	ON_COMMAND(ID_FILE_SAVE, OnFileSave)
 	ON_COMMAND(ID_FILE_SAVE_AS, OnFileSaveAs)
-	ON_WM_LBUTTONDBLCLK()
 	ON_COMMAND(ID_FILE_NEW, OnFileNew)
+	ON_COMMAND(IDD_TEXT, OnText)
+	ON_WM_LBUTTONDBLCLK()
+	ON_WM_CREATE()
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -171,6 +177,24 @@ BOOL CGraphicView::OnEraseBkgnd(CDC* pDC)
 	// nothing
 	return CView::OnEraseBkgnd(pDC);
 	//return true;
+}
+
+int CGraphicView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+	if (CView::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	/*
+    TEXTMETRIC tm;  
+    MemDC.GetTextMetrics(&tm);//获取当前字符高度和宽度值，来矫正插入光标的大小  
+    CreateSolidCaret(tm.tmAveCharWidth/8,tm.tmHeight);//创建插入符  
+    ShowCaret();//显示插入符  
+  
+    SetTimer(1,50, NULL);//设置定时器消息，1表示定时器标识符，50表示50ms产生一个消息，NULL指的是进入消息队列产生WM_TIMER消息  
+
+	*/
+	// TODO: Add your specialized creation code here
+
+	return 0;
 }
 
 inline void CGraphicView::NormalTrans(){
@@ -637,7 +661,6 @@ void CGraphicView::OnRotate()
 		if(m_nRotateModel==0)m_nAngle+=dlg.m_nAngle;
 		else m_nAngle-=dlg.m_nAngle;
 
-
 		NormalTrans();
 		pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 		//平移
@@ -651,6 +674,7 @@ void CGraphicView::OnRotate()
 		else graphics.RotateTransform(1.0f*(1080-m_nAngle));
 		//还原源点	
 		graphics.TranslateTransform(1.0f*(0-(imagePointX+m_ZoomRow/2)), 1.0f*(0-(imagePointY+m_ZoomColumn/2)));
+
 
 		//在某个起点显示图像
 		graphics.DrawImage(m_pImg, imagePointX, imagePointY);
@@ -690,7 +714,7 @@ void CGraphicView::OnTranslate()
 		else m_TranslateLevel-=dlg.m_TranslateLevel;
 		if(dlg.m_signal2==0)m_TranslateVertical+=dlg.m_TranslateVertical;
 		else m_TranslateVertical-=dlg.m_TranslateVertical;
-
+		
 		NormalTrans();
 		pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 		//平移
@@ -735,9 +759,10 @@ void CGraphicView::OnGray()
     }
 	else
 	{
-      NormalTrans();
 	  isAll=false;
 	  isGray=true;
+	  
+	  NormalTrans();
 	  pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 	  //平移
 	  graphics.TranslateTransform((float)m_TranslateLevel, (float)m_TranslateVertical); 
@@ -746,7 +771,7 @@ void CGraphicView::OnGray()
   	  //源点移动到旋转中心
 	  graphics.TranslateTransform(1.0f*(imagePointX+m_ZoomRow/2),1.0f*(imagePointY+m_ZoomColumn/2));
 	  //旋转
-      if(!m_nRotateModel)graphics.RotateTransform(1.0f*m_nAngle); 
+	  if(!m_nRotateModel)graphics.RotateTransform(1.0f*m_nAngle); 
 	  else graphics.RotateTransform(1.0f*(1080-m_nAngle));
 	  //还原源点	
 	  graphics.TranslateTransform(1.0f*(0-(imagePointX+m_ZoomRow/2)), 1.0f*(0-(imagePointY+m_ZoomColumn/2)));
@@ -779,13 +804,49 @@ void CGraphicView::OnGauss()
 	Graphics graphics(MemDC.GetSafeHdc());
     CRect rect;
     this->GetClientRect(&rect);
+	//获取屏幕DC
+	HDC hDC=::GetDC(NULL);
 
-	
-
-	pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
-	
+	COLORREF *pCopy;
+	pCopy=new COLORREF[rect.Width()*rect.Height()];
+	int nRadius=2;
+	for(int ny=0;ny<rect.Width();++ny)
+      for (int nx=0;nx<rect.Height();++nx){  
+		std::vector<COLOR_DATA> cdList;  
+        cdList.reserve(200);  
+        COLOR_DATA cd;  
+        double dTotal=0;  
+        for (int m=nx-nRadius; m<=nx+nRadius;++m){
+          if (m<0 || m>=nWidth ) continue;  
+            for (int n=ny-nRadius;n<=ny+nRadius;++n){  
+                    if (n<0 || n>=nHeight ) continue;  
+                    cd.dDistance=GAUSS_FUN(sqrt((double)((m-nx)*(m-nx)+(n-ny)*(n-ny))), sigma);  
+                    dTotal+=cd.dDistance;
+					cd.dwColor=::GetPixel(hDC, nx, ny); 
+                    cdList.push_back(cd);  
+			}  
+		}
+         if ( cdList.size()>0 )  
+         {//这里来计算整个邻域内所有像素点的加权平均值  
+	    	std::vector<COLOR_DATA>::const_iterator itor=cdList.begin();  
+            double r=0, g=0, b=0;  
+            for ( ; itor!=cdList.end(); ++itor )   
+            {  
+               double dRate=itor->dDistance/dTotal;//距离中心点越远，权值越小  
+               r+=GetRValue(itor->dwColor)*dRate;  
+               g+=GetGValue(itor->dwColor)*dRate;  
+               b+=GetBValue(itor->dwColor)*dRate;  
+            }  
+            *(pCopy+nx*rect.Width()+ny)=RGB((int)r, (int)g, (int)b);  
+         }  
+	  }
+    for(int y=0;y<rect.Width();++y)
+      for (int x=0;x<rect.Height();++x)
+	    pDC->SetPixel(x,y,*(pCopy+x*rect.Width()+y));
+    
+    delete[] pCopy;
 	ReleaseDC(pDC);
-}  
+}
 
 ///////////////////////////////////////////
 void CGraphicView::imageDraw(){
@@ -812,6 +873,7 @@ void CGraphicView::imageDraw(){
 	  ReleaseDC(pDC);
 	  return;
 	}
+	NormalTrans();
 	pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 	//平移
 	graphics.TranslateTransform((float)m_TranslateLevel, (float)m_TranslateVertical); 
@@ -949,6 +1011,29 @@ void CGraphicView::OnFillarea()
 	imageConfirmnation();
 
 	m_nDrawType=11;
+}
+
+void CGraphicView::OnText() 
+{
+	// TODO: Add your command handler code here
+
+
+
+
+/*	CFontDialog dlg; 
+    if(IDOK==dlg.DoModal()) 
+    { 
+		CDC* pDC=GetDC();
+        //if(m_font.m_hObject) 
+            //m_font.DeleteObject(); 
+        m_font.CreateFontIndirect(dlg.m_cf.lpLogFont); 
+        m_strFontName=dlg.m_cf.lpLogFont->lfFaceName; 
+        CFont *pOldFont=pDC->SelectObject(&m_font);
+        pDC->TextOut(0,0,m_strFontName); 
+        pDC->SelectObject(pOldFont); 
+		m_font.DeleteObject();
+		ReleaseDC(pDC);
+    }*/
 }
 
 //////////////////////////////////////

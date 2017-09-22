@@ -51,6 +51,12 @@ public:
 	bool isGray;
 	bool imageConfirm;
 	bool isAll;
+
+//	CHOOSEFONT m_cf;
+//	CFont m_font;
+//	CString m_strFontName;
+
+
 // Operations
 public:
 	void initial();
@@ -111,6 +117,8 @@ protected:
 	afx_msg void OnFileSave();
 	afx_msg void OnFileSaveAs();
 	afx_msg void OnFileNew();
+	afx_msg void OnText();
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

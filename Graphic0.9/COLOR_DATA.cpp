@@ -1,0 +1,27 @@
+// COLOR_DATA.cpp: implementation of the CCOLOR_DATA class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
+#include "Graphic.h"
+#include "COLOR_DATA.h"
+
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+
+COLOR_DATA::COLOR_DATA()
+{
+
+}
+
+COLOR_DATA::~COLOR_DATA()
+{
+
+}

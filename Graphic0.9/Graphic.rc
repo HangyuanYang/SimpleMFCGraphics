@@ -159,6 +159,7 @@ BEGIN
     BEGIN
         MENUITEM "橡皮擦",                      ID_ERASE
         MENUITEM "填充",                        ID_FILLAREA
+        MENUITEM "文本框",                      IDD_TEXT
     END
     POPUP "几何变换"
     BEGIN

@@ -187,6 +187,10 @@ graph RL
     4-->5
 ```
 
+
+
+![Flowchart](.\Graphic2.0\screenshot\functionstructure.bmp)
+
 ## 功能介绍
 
 1. 文件导入保存：
@@ -293,59 +297,39 @@ int GetEncoderClsid(const WCHAR* , CLSID* );//获取文件路径的Clsid测试�
 
 password：
 
-![img](..\Graphic\Graphic1.0\screenshot\password.bmp)
-
-
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/password.bmp)
+![img](.\Graphic2.0\screenshot\password.bmp)
 
 基本绘图操作：
 
-![img](..\Graphic\Graphic1.0\screenshot\基本绘图操作.bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/基本绘图操作.bmp)
+![img](.\Graphic2.0\screenshot\基本绘图操作.bmp)
 
 文件打开：
 
-![img](..\Graphic\Graphic1.0\screenshot\文件打开.bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/文件打开.bmp)
+![img](.\Graphic2.0\screenshot\文件打开.bmp)
 
 文件保存(另存为)
 
-![img](..\Graphic\Graphic1.0\screenshot\文件保存(另存为).bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/文件保存(另存为).bmp)
+![img](.\Graphic2.0\screenshot\文件保存(另存为).bmp)
 
 几何变换
 
-![img](..\Graphic\Graphic1.0\screenshot\几何变换.bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/几何变换.bmp)
+![img](.\Graphic2.0\screenshot\几何变换.bmp)
 
 填充
 
-![img](..\Graphic\Graphic1.0\screenshot\填充.bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/填充.bmp)
+![img](.\Graphic2.0\screenshot\填充.bmp)
 
 反色
 
-![img](..\Graphic\Graphic1.0\screenshot\反色.bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/反色.bmp)
+![img](.\Graphic2.0\screenshot\反色.bmp)
 
 平滑处理
 
-![img](..\Graphic\Graphic1.0\screenshot\平滑处理.bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/平滑处理.bmp)
+![img](.\Graphic2.0\screenshot\平滑处理.bmp)
 
 图像锐化
 
-![img](..\Graphic\Graphic1.0\screenshot\图像锐化.bmp)
-
-![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/图像锐化.bmp)
+![img](.\Graphic2.0\screenshot\图像锐化.bmp)
 
 ## 总结
 

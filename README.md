@@ -189,7 +189,7 @@ graph RL
 
 
 
-![Flowchart](.\Graphic2.0\screenshot\functionstructure.bmp)
+![Flowchart](/Graphic2.0/screenshot/functionstructure.bmp)
 
 ## 功能介绍
 
@@ -297,39 +297,39 @@ int GetEncoderClsid(const WCHAR* , CLSID* );//获取文件路径的Clsid测试�
 
 password：
 
-![img](.\Graphic2.0\screenshot\password.bmp)
+![img](/Graphic2.0/screenshot/password.bmp)
 
 基本绘图操作：
 
-![img](.\Graphic2.0\screenshot\基本绘图操作.bmp)
+![img](/Graphic2.0/screenshot/基本绘图操作.bmp)
 
 文件打开：
 
-![img](.\Graphic2.0\screenshot\文件打开.bmp)
+![img](/Graphic2.0/screenshot/文件打开.bmp)
 
 文件保存(另存为)
 
-![img](.\Graphic2.0\screenshot\文件保存(另存为).bmp)
+![img](/Graphic2.0/screenshot/文件保存(另存为).bmp)
 
 几何变换
 
-![img](.\Graphic2.0\screenshot\几何变换.bmp)
+![img](/Graphic2.0/screenshot/几何变换.bmp)
 
 填充
 
-![img](.\Graphic2.0\screenshot\填充.bmp)
+![img](/Graphic2.0/screenshot/填充.bmp)
 
 反色
 
-![img](.\Graphic2.0\screenshot\反色.bmp)
+![img](/Graphic2.0/screenshot/反色.bmp)
 
 平滑处理
 
-![img](.\Graphic2.0\screenshot\平滑处理.bmp)
+![img](/Graphic2.0/screenshot/平滑处理.bmp)
 
 图像锐化
 
-![img](.\Graphic2.0\screenshot\图像锐化.bmp)
+![img](/Graphic2.0/screenshot/图像锐化.bmp)
 
 ## 总结
 
@@ -438,6 +438,8 @@ password：
 ##其他补充
 
 > 重绘: OnEraseBkgnd -> OnPaint ->OnDraw
+>
+> 相对路径要用/不是.\远程github会出错
 >
 > password!   password
 >

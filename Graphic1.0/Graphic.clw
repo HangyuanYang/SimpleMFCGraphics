@@ -2,34 +2,36 @@
 
 [General Info]
 Version=1
-LastClass=CTextDlg
+LastClass=CProtection
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Graphic.h"
 LastPage=0
 
-ClassCount=11
+ClassCount=12
 Class1=CGraphicApp
 Class2=CGraphicDoc
 Class3=CGraphicView
 Class4=CMainFrame
 
-ResourceCount=8
-Resource1=IDD_DLG_ROTATE
+ResourceCount=9
+Resource1=IDD_DLG_ZOOM
 Class5=CAboutDlg
-Resource2=IDD_ConFirm
+Resource2=IDD_DLG_TEXT
 Class6=SettingDlg
-Resource3=IDD_DLG_SETTING
+Resource3=IDD_DLG_ROTATE
 Class7=CRotateDlg
-Resource4=IDD_ABOUTBOX
+Resource4=IDD_DLG_SETTING
 Class8=CZoomDlg
 Resource5=IDR_MAINFRAME
 Class9=CTranslateTrans
-Resource6=IDD_DLG_ZOOM
+Resource6=IDD_ConFirm
 Class10=CConfirmDlg
 Resource7=IDD_Dlg_TranslateTrans
 Class11=CTextDlg
-Resource8=IDD_DLG_TEXT
+Resource8=IDD_ABOUTBOX
+Class12=CProtection
+Resource9=IDD_FakeProtection
 
 [CLS:CGraphicApp]
 Type=0
@@ -61,7 +63,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=IDD_GUN
+LastObject=IDC_EDIT1
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -114,25 +116,26 @@ Command24=IDM_Polyline
 Command25=IDM_SIMPLEBRUSH
 Command26=IDM_BITMAPBRUSH
 Command27=IDM_TRANSPARENTBRUSH
-Command28=ID_ERASE
-Command29=ID_FILLAREA
-Command30=IDD_GUN
-Command31=IDD_TEXT
-Command32=IDD_LEVELFILP
-Command33=IDD_VERTICALFILP
-Command34=ID_ALL
-Command35=ID_TRANSLATE
-Command36=ID_ZOOM
-Command37=ID_ROTATE
-Command38=ID_GRAY
-Command39=IDD_NOT
-Command40=ID_GAUSS
-Command41=IDD_MEDIAN
-Command42=IDD_BILATERAL
-Command43=IDD_SIMPLE_NO_SCALE
-Command44=IDD_LAPLACE
-Command45=IDD_SOBEL
-CommandCount=45
+Command28=IDD_ROUNDRECT
+Command29=ID_ERASE
+Command30=ID_FILLAREA
+Command31=IDD_GUN
+Command32=IDD_TEXT
+Command33=IDD_LEVELFILP
+Command34=IDD_VERTICALFILP
+Command35=ID_ALL
+Command36=ID_TRANSLATE
+Command37=ID_ZOOM
+Command38=ID_ROTATE
+Command39=ID_GRAY
+Command40=IDD_NOT
+Command41=ID_GAUSS
+Command42=IDD_MEDIAN
+Command43=IDD_BILATERAL
+Command44=IDD_SIMPLE_NO_SCALE
+Command45=IDD_LAPLACE
+Command46=IDD_SOBEL
+CommandCount=46
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -297,4 +300,22 @@ BaseClass=CDialog
 Filter=D
 LastObject=IDC_EDIT1
 VirtualFilter=dWC
+
+[DLG:IDD_FakeProtection]
+Type=1
+Class=CProtection
+ControlCount=4
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_PASSWORD,edit,1350631553
+Control4=IDC_STATIC,static,1342308865
+
+[CLS:CProtection]
+Type=0
+HeaderFile=Protection.h
+ImplementationFile=Protection.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=IDC_PASSWORD
 

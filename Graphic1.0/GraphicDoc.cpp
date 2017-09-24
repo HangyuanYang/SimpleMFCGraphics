@@ -85,7 +85,7 @@ void CGraphicDoc::Dump(CDumpContext& dc) const
 void CGraphicDoc::OnFileOpen() 
 {
 	// TODO: Add your command handler code here
-	LPCTSTR lpszFilter="BMP Files(*.bmp)|*.bmp|JPG Files(*.jpg)|*.bmp|JPEG Files(*.jpeg)|*.jpeg|PNG Files(*.png)|*.bmp|";
+	LPCTSTR lpszFilter="BMP Files(*.bmp)|*.bmp|JPG Files(*.jpg)|*.jpg|JPEG Files(*.jpeg)|*.jpeg|PNG Files(*.png)|*.png|";
 	CFileDialog dlg(TRUE,lpszFilter,NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,lpszFilter,NULL);
 	CString filepath;
 	CFile file;
@@ -101,14 +101,16 @@ void CGraphicDoc::OnFileOpen()
 			AfxMessageBox("无法打开文件！",MB_OK,0);
 			return;
 		}
+		/*
 		//读取文件头
 		file.Read(&bf,sizeof(bf));
-	/*	//判断是否是BMP文件
+		//判断是否是BMP文件
 		if(bf.bfType!=0x4d42)//'BM'
 		{
 			AfxMessageBox("非BMP文件！",MB_OK,0);
 			return;
 		}*/
+		/*
 		//判断文件是否损坏
 		if(file.GetLength()!=bf.bfSize)
 		{
@@ -138,6 +140,7 @@ void CGraphicDoc::OnFileOpen()
 		//读取图像数据
 		file.Read(lpbuf,bi.biSizeImage);
 		//图像读取完毕，关闭文件，设置标志
+		*/
 		file.Close();
 		flagOpen=1;
 		this->UpdateAllViews(NULL);

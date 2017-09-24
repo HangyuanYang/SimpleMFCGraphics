@@ -12,6 +12,7 @@
 #define IDD_Dlg_TranslateTrans          139
 #define IDD_ConFirm                     140
 #define IDD_DLG_TEXT                    141
+#define IDD_FakeProtection              142
 #define IDC_LINEWIDTH                   1000
 #define IDC_LINEMODEL1                  1002
 #define IDC_LINEMODEL2                  1003
@@ -36,6 +37,7 @@
 #define IDC_EDITX                       1033
 #define IDC_EDITY                       1034
 #define IDC_EDITCONTENT                 1035
+#define IDC_PASSWORD                    1036
 #define IDM_LINE                        32771
 #define IDM_ELLIPSE                     32773
 #define IDM_DOT                         32774
@@ -66,15 +68,16 @@
 #define IDD_LAPLACE                     32801
 #define IDD_SOBEL                       32802
 #define IDD_GUN                         32803
+#define IDD_ROUNDRECT                   32804
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        142
-#define _APS_NEXT_COMMAND_VALUE         32804
-#define _APS_NEXT_CONTROL_VALUE         1036
+#define _APS_NEXT_RESOURCE_VALUE        143
+#define _APS_NEXT_COMMAND_VALUE         32805
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

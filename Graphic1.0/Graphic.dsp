@@ -121,6 +121,10 @@ SOURCE=.\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Protection.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\RotateDlg.cpp
 # End Source File
 # Begin Source File
@@ -171,6 +175,10 @@ SOURCE=.\GraphicView.h
 # Begin Source File
 
 SOURCE=.\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Protection.h
 # End Source File
 # Begin Source File
 

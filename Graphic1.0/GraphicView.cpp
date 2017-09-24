@@ -13,6 +13,7 @@
 #include "TranslateTrans.h"
 #include "TextDlg.h"
 #include "COLOR_DATA.h"
+#include "Protection.h"
 #include <cstdlib>
 #include <vector>
 #include <cmath>
@@ -70,8 +71,9 @@ BEGIN_MESSAGE_MAP(CGraphicView, CView)
 	ON_COMMAND(IDD_VERTICALFILP, OnVerticalfilp)
 	ON_COMMAND(IDD_LAPLACE, OnLaplace)
 	ON_COMMAND(IDD_SOBEL, OnSobel)
-	ON_WM_LBUTTONDBLCLK()
 	ON_COMMAND(IDD_GUN, OnGun)
+	ON_WM_LBUTTONDBLCLK()
+	ON_COMMAND(IDD_ROUNDRECT, OnRoundrect)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -101,7 +103,7 @@ CGraphicView::CGraphicView()
 	m_cTrans=1;
 	isGray=false;
 	imageConfirm=false;
-	isAll=false;
+	ism_p=false;
 }
 
 
@@ -276,8 +278,7 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
 		hCur=LoadCursor(NULL,IDC_NO);
 		::SetCursor(hCur);
 	    break;
-	case 11:
-		//这个填充能用。。就是有点卡
+	case 11://填充
 		if(clr!=m_Color){
 			MemDC.SelectObject(brush);									
 			ExtFloodFill(MemDC,point.x,point.y,clr,FLOODFILLSURFACE);
@@ -362,19 +363,25 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 	
 
 	switch (m_nDrawType){
-	  case 2:/*绘制直线*/
+	  case 2://绘制直线
+		  //调用MoveTo函数移动到原点
 		  MemDC.MoveTo(m_ptOrigin);
-		  /*调用MoveTo函数移动到原点*/
+		  //调用LineTo函数绘制到终点
 		  MemDC.LineTo(point);
-		  /*调用LineTo函数绘制到终点*/
 		  break;
-	  case 3:/*绘制矩形*/
+	  case 3://绘制矩形
 		  MemDC.Rectangle(CRect(m_ptOrigin,point));
 		  //恢复先前的画刷
 		  MemDC.SelectObject(pOldBrush);
 		  break;
-	  case 4:/*绘制椭圆*/
+	  case 4://绘制椭圆
 		  MemDC.Ellipse(CRect(m_ptOrigin,point));
+		  //恢复先前的画刷
+		  MemDC.SelectObject(pOldBrush);
+		  break;
+	  case 13://绘制圆角矩形
+		  MemDC.RoundRect(CRect(m_ptOrigin,point),CPoint(20,20));
+		  //CPoint(20,20)表明了圆角的幅度
 		  //恢复先前的画刷
 		  MemDC.SelectObject(pOldBrush);
 		  break;
@@ -464,18 +471,18 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 
 	if(m_bDraw==true){
 		switch(m_nDrawType){
-			case 2://Line
+			case 2://动态画线
 				pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 				pDC->MoveTo(m_ptOrigin);  
 				pDC->LineTo(point);  
 				break;
-			case 3://Rectangle
+			case 3://动态画矩形
 				pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 				pDC->Rectangle(CRect(m_ptOrigin,point));
 				//恢复先前的画刷
 				pDC->SelectObject(pOldBrush);
 				break;
-			case 4:
+			case 4://动态画椭圆
 			    pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 				pDC->Ellipse(CRect(m_ptOrigin,point));
 				//恢复先前的画刷
@@ -492,6 +499,13 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 				//修改线段的起点        
 				m_ptOrigin=point;
 				pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY); 
+				break;
+			case 13://动态画圆角矩形
+				pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
+				pDC->RoundRect(CRect(m_ptOrigin,point),CPoint(20,20));
+				//CPoint规定了圆角的幅度
+				//恢复先前的画刷
+				pDC->SelectObject(pOldBrush);
 				break;
 			case 10://erase
 				CBrush brush(RGB(255,255,255));
@@ -511,7 +525,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 			//Simplebrush
 			pDC->BitBlt(0, 0 ,nWidth,nHeight,&MemDC,0,0,SRCCOPY);
 			CBrush brush(m_Color);
-			//利用画刷填充鼠标拖曳过程中形成的矩形区域 
+			//利用画刷填充鼠标拖曳过程中形成的矩形区域
 			pDC->FillRect(CRect(m_ptOrigin,point),&brush);
 		}
 		if(m_nDrawType==8){
@@ -619,7 +633,6 @@ void CGraphicView::OnLevelfilp()
 
 void CGraphicView::OnVerticalfilp() 
 {
-	// TODO: Add your command handler code here
 	// TODO: Add your command handler code here
 	if(imageConfirm){
 		AfxMessageBox("图像已固定！");
@@ -943,7 +956,8 @@ void CGraphicView::OnGauss()
     bmp.Save(pBuf, &Clsid, NULL);
 	IplImage* img_src = 0;  
     char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
-    img_src = cvLoadImage(pictureImage, 1);  
+    img_src = cvLoadImage(pictureImage, 1);
+	file.Remove(filepath);
 	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
 	cvSmooth(img_src,img_dst,CV_GAUSSIAN, 3, 3); 
 	CvvImage img;
@@ -1041,7 +1055,8 @@ void CGraphicView::OnMedian()
     bmp.Save(pBuf, &Clsid, NULL);
 	IplImage* img_src = 0;  
     char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
-    img_src = cvLoadImage(pictureImage, 1);  
+    img_src = cvLoadImage(pictureImage, 1);
+	file.Remove(filepath);
 	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
 	cvSmooth(img_src,img_dst,CV_MEDIAN, 3, 3); 
 	CvvImage img;
@@ -1090,6 +1105,7 @@ void CGraphicView::OnBilateral()
 	IplImage* img_src = 0;  
     char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
     img_src = cvLoadImage(pictureImage, 1);  
+	file.Remove(filepath);
 	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
 	cvSmooth(img_src,img_dst,CV_BILATERAL, 3, 3); 
 	CvvImage img;
@@ -1101,6 +1117,7 @@ void CGraphicView::OnBilateral()
 	CopyToMemDC();
 }
 
+//简单无放缩变换平滑
 void CGraphicView::OnSimpleNoScale() 
 {
 	// TODO: Add your command handler code here
@@ -1136,7 +1153,8 @@ void CGraphicView::OnSimpleNoScale()
     bmp.Save(pBuf, &Clsid, NULL);
 	IplImage* img_src = 0;  
     char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
-    img_src = cvLoadImage(pictureImage, 1);  
+    img_src = cvLoadImage(pictureImage, 1); 
+	file.Remove(filepath);
 	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
 	cvSmooth(img_src,img_dst,CV_BLUR_NO_SCALE, 3, 3); 
 	CvvImage img;
@@ -1185,6 +1203,7 @@ void CGraphicView::OnNot()
 	IplImage* img_src = 0;  
     char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
     img_src = cvLoadImage(pictureImage, 1);  
+	file.Remove(filepath);
 	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_8U,3);//创建一个size为image,三通道8位的彩色图
 	cvNot(img_src,img_dst);
 	CvvImage img;
@@ -1233,6 +1252,7 @@ void CGraphicView::OnLaplace()
     IplImage* img_src = 0;  
     char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
     img_src = cvLoadImage(pictureImage, 1);  
+	file.Remove(filepath);
 	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_32F,3);//创建一个size为image,三通道8位的彩色图
 
 	cvLaplace(img_src,img_dst);
@@ -1282,6 +1302,7 @@ void CGraphicView::OnSobel()
     IplImage* img_src = 0;  
     char* pictureImage = filepath.GetBuffer(filepath.GetLength());  
     img_src = cvLoadImage(pictureImage, 1);  
+	file.Remove(filepath);
 	IplImage* img_dst=cvCreateImage(cvGetSize(img_src),IPL_DEPTH_32F,3);//创建一个size为image,三通道8位的彩色图
 
 	cvSobel(img_src,img_dst,1,0,3);
@@ -1457,6 +1478,14 @@ void CGraphicView::OnGun()
 	m_nDrawType=12;
 }
 
+void CGraphicView::OnRoundrect() 
+{
+	// TODO: Add your command handler code here
+	imageConfirmnation();
+
+	m_nDrawType=13;
+}
+
 void CGraphicView::OnText() 
 {
 	// TODO: Add your command handler code here
@@ -1573,8 +1602,11 @@ void CGraphicView::OnDraw(CDC* pDC)
 void CGraphicView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-
-	
+	if(!ism_p){
+	  CProtection dlg;
+	  if(dlg.DoModal()==IDOK&&dlg.m_Password==pas)ism_p=true;
+	  else ExitProcess(0);
+	}
 ///////////////////////////////////////////////////////////////////////////////
 //加载图片
 
@@ -1767,8 +1799,9 @@ void CGraphicView::OnFileSave()
     Bitmap bm((HBITMAP)MemBitmap, NULL);//定义bitmap
     CLSID Clsid; 
 	//文件名和path中的有关和下面的无关额
-	if(pDoc->FileExt==_T("bmp"))GetEncoderClsid(L"image/bmp", &Clsid); 
-	else if(pDoc->FileExt==_T("jpg"))GetEncoderClsid(L"image/jpg", &Clsid); 
+	if(pDoc->FileExt==_T("bmp"))GetEncoderClsid(L"image/bmp", &Clsid);
+	else //必须这样才能保存jpg
+		if(pDoc->FileExt==_T("jpg"))GetEncoderClsid(L"image/jpeg", &Clsid); 
 	else if(pDoc->FileExt==_T("jpeg"))GetEncoderClsid(L"image/jpeg", &Clsid); 
 	else if(pDoc->FileExt==_T("png"))GetEncoderClsid(L"image/png", &Clsid); 
     bm.Save(pBuf, &Clsid, NULL);
@@ -1779,7 +1812,7 @@ void CGraphicView::OnFileSave()
 void CGraphicView::OnFileSaveAs() 
 {
 	// TODO: Add your command handler code here
-	LPCTSTR lpszFilter="BMP Files(*.bmp)|*.bmp|JPG Files(*.jpg)|*.bmp|JPEG Files(*.jpeg)|*.jpeg|PNG Files(*.png)|*.bmp|";
+	LPCTSTR lpszFilter="BMP Files(*.bmp)|*.bmp|JPG Files(*.jpg)|*.jpg|JPEG Files(*.jpeg)|*.jpeg|PNG Files(*.png)|*.png|";
 	CFileDialog  dlg(FALSE,lpszFilter,NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,lpszFilter,NULL);
 	
 	CDC* pDC=GetDC();
@@ -1799,7 +1832,8 @@ void CGraphicView::OnFileSaveAs()
     CLSID Clsid; 
 	//文件名和path中的有关和下面的无关额
 	if(fileExt==_T("bmp"))GetEncoderClsid(L"image/bmp", &Clsid); 
-	else if(fileExt==_T("jpg"))GetEncoderClsid(L"image/jpg", &Clsid); 
+	else //必须这样才能保存jpg
+		if(fileExt==_T("jpg"))GetEncoderClsid(L"image/jpeg", &Clsid); 
 	else if(fileExt==_T("jpeg"))GetEncoderClsid(L"image/jpeg", &Clsid); 
 	else if(fileExt==_T("png"))GetEncoderClsid(L"image/png", &Clsid); 
     bm.Save(pBuf, &Clsid, NULL);
@@ -1868,3 +1902,5 @@ void CGraphicView::sprayGun(CPoint point){
    }
    ReleaseDC(pDC);
 }
+
+

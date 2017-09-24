@@ -20,6 +20,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CMainFrame)
 	ON_WM_CREATE()
+	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -39,6 +40,7 @@ CMainFrame::CMainFrame()
 	// TODO: add member initialization code here
 	
 }
+
 
 CMainFrame::~CMainFrame()
 {
@@ -89,3 +91,12 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame message handlers
+
+void CMainFrame::OnClose() 
+{
+	// TODO: Add your message handler code here and/or call default
+	if(MessageBox("\t   确定要退出吗？","提示",MB_YESNO|MB_DEFBUTTON2)==IDYES)
+	{
+		CFrameWnd::OnClose();
+	}
+}

@@ -51,6 +51,7 @@ public:
 	bool isGray;
 	bool imageConfirm;
 	bool isAll;
+	bool ism_p;
 
 //	CHOOSEFONT m_cf;
 //	CFont m_font;
@@ -131,11 +132,13 @@ protected:
 	afx_msg void OnLaplace();
 	afx_msg void OnSobel();
 	afx_msg void OnGun();
+	afx_msg void OnRoundrect();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 };
 
+static CString pas("password");
 
 #ifndef _DEBUG  // debug version in GraphicView.cpp
 inline CGraphicDoc* CGraphicView::GetDocument()

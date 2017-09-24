@@ -67,7 +67,8 @@ Feature List
 - [x] Select Color
 - [x] Select Fill Model
 
-      6. Geometric transformation
+6. Geometric transformation
+
 - [x] Stretch/Shrink
 - [x] Flip/Rotate
 - [x] Translate
@@ -233,60 +234,59 @@ using namespace Gdiplus;
 
 * **CGraphicApp** 负责外部库的配置，**CGraphicDoc**存储打开的图像的路径信息以及文件类型，**CGraphicView**负责主要的绘图操作,其成员函数以及成员变量构成如下：
 
-  ```c++
-  消息响应函数:
-  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);//鼠标按下响应
-  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);//鼠标抬起响应
-  afx_msg void OnMouseMove(UINT nFlags, CPoint point);//鼠标移动响应
-  afx_msg void OnLine();//选定画直线操作
-  afx_msg void OnRectangle();//选定画矩形操作
-  afx_msg void OnDot();//选定画点操作
-  afx_msg void OnEllipse();//选定画椭圆操作
-  afx_msg void OnSector();//选定画扇形操作
-  afx_msg void OnPolyline();//选定画折线操作
-  afx_msg void OnSimplebrush();//选定简单画刷
-  afx_msg void OnBitmapbrush();//选定位图画刷
-  afx_msg void OnTransparentbrush();//选定透明画刷
-  afx_msg void OnColor();//选定颜色设置
-  afx_msg void OnSetting();//选定线型、线宽、实心空心设置
-  afx_msg BOOL OnEraseBkgnd(CDC* pDC);//背景消除响应函数
-  afx_msg void OnErase();//选定颜色设置
-  afx_msg void OnFillarea();//选定填充操作
-  afx_msg void OnRotate();//选定旋转操作
-  afx_msg void OnPaint();//重绘消息响应函数
-  afx_msg void OnGray();//选定灰化操作
-  afx_msg void OnAll();//选定平铺操作
-  afx_msg void OnZoom();//选定缩放操作
-  afx_msg void OnTranslate();//选定平移操作
-  afx_msg void OnGauss();//选定高斯平滑操作
-  afx_msg void OnFileSave();//选定保存操作
-  afx_msg void OnFileSaveAs();//选定另存为操作
-  afx_msg void OnFileNew();//选定新建操作
-  afx_msg void OnText();//选定添加文本框
-  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);//初始时窗口限制最大化
-  afx_msg void OnMedian();//选定中值滤波操作
-  afx_msg void OnBilateral();//选定双边滤波操作
-  afx_msg void OnSimpleNoScale();//选定简单无放缩变换平滑操作
-  afx_msg void OnNot();//选定反色操作
-  afx_msg void OnLevelfilp();//选定水平翻转操作
-  afx_msg void OnVerticalfilp();//选定颜竖直翻转操作
-  afx_msg void OnLaplace();//选定Laplace图像锐化操作
-  afx_msg void OnSobel();//选定Sobel图像锐化操作
-  afx_msg void OnGun();//选定喷枪操作
-  afx_msg void OnRoundrect();//选定圆角矩形操作
-  其他函数：
-  virtual void OnDraw(CDC* pDC);  // overridden to draw this view
+```c++
+消息响应函数:
+afx_msg void OnLButtonDown(UINT nFlags, CPoint point);//鼠标按下响应
+afx_msg void OnLButtonUp(UINT nFlags, CPoint point);//鼠标抬起响应
+afx_msg void OnMouseMove(UINT nFlags, CPoint point);//鼠标移动响应
+afx_msg void OnLine();//选定画直线操作
+afx_msg void OnRectangle();//选定画矩形操作
+afx_msg void OnDot();//选定画点操作
+afx_msg void OnEllipse();//选定画椭圆操作
+afx_msg void OnSector();//选定画扇形操作
+afx_msg void OnPolyline();//选定画折线操作
+afx_msg void OnSimplebrush();//选定简单画刷
+afx_msg void OnBitmapbrush();//选定位图画刷
+afx_msg void OnTransparentbrush();//选定透明画刷
+afx_msg void OnColor();//选定颜色设置
+afx_msg void OnSetting();//选定线型、线宽、实心空心设置
+afx_msg BOOL OnEraseBkgnd(CDC* pDC);//背景消除响应函数
+afx_msg void OnErase();//选定颜色设置
+afx_msg void OnFillarea();//选定填充操作
+afx_msg void OnRotate();//选定旋转操作
+afx_msg void OnPaint();//重绘消息响应函数
+afx_msg void OnGray();//选定灰化操作
+afx_msg void OnAll();//选定平铺操作
+afx_msg void OnZoom();//选定缩放操作
+afx_msg void OnTranslate();//选定平移操作
+afx_msg void OnGauss();//选定高斯平滑操作
+afx_msg void OnFileSave();//选定保存操作
+afx_msg void OnFileSaveAs();//选定另存为操作
+afx_msg void OnFileNew();//选定新建操作
+afx_msg void OnText();//选定添加文本框
+afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);//初始时窗口限制最大化
+afx_msg void OnMedian();//选定中值滤波操作
+afx_msg void OnBilateral();//选定双边滤波操作
+afx_msg void OnSimpleNoScale();//选定简单无放缩变换平滑操作
+afx_msg void OnNot();//选定反色操作
+afx_msg void OnLevelfilp();//选定水平翻转操作
+afx_msg void OnVerticalfilp();//选定颜竖直翻转操作
+afx_msg void OnLaplace();//选定Laplace图像锐化操作
+afx_msg void OnSobel();//选定Sobel图像锐化操作
+afx_msg void OnGun();//选定喷枪操作
+afx_msg void OnRoundrect();//选定圆角矩形操作
+其他函数：
+virtual void OnDraw(CDC* pDC);  // overridden to draw this view
 
-  void initial();//新建画布初始化
-  void NormalTrans();//*几何变换（无效）
-  void CopyToMemDC();//将ClientDC中内容复制到MemDC中
-  void imageConfirmnation();//完成几何变换后进行图像确认
-  void imageDraw();//完成图像确认后固定图像
-  void sprayGun(CPoint);//喷枪
-  bool Load( LPCTSTR pszFileName );//加载Image操作
-  int GetEncoderClsid(const WCHAR* , CLSID* );//获取文件路径的Clsid测试报告
-  ```
-
+void initial();//新建画布初始化
+void NormalTrans();//*几何变换（无效）
+void CopyToMemDC();//将ClientDC中内容复制到MemDC中
+void imageConfirmnation();//完成几何变换后进行图像确认
+void imageDraw();//完成图像确认后固定图像
+void sprayGun(CPoint);//喷枪
+bool Load( LPCTSTR pszFileName );//加载Image操作
+int GetEncoderClsid(const WCHAR* , CLSID* );//获取文件路径的Clsid测试报告
+```
 ## 测试报告
 
 由于对于MFC单文档应用程序尤其是画图程序不适合通过测试代码来测试运行效果，此处用截图表示：
@@ -297,37 +297,55 @@ password：
 
 
 
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/password.bmp)
+
 基本绘图操作：
 
 ![img](..\Graphic\Graphic1.0\screenshot\基本绘图操作.bmp)
+
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/基本绘图操作.bmp)
 
 文件打开：
 
 ![img](..\Graphic\Graphic1.0\screenshot\文件打开.bmp)
 
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/文件打开.bmp)
+
 文件保存(另存为)
 
 ![img](..\Graphic\Graphic1.0\screenshot\文件保存(另存为).bmp)
+
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/文件保存(另存为).bmp)
 
 几何变换
 
 ![img](..\Graphic\Graphic1.0\screenshot\几何变换.bmp)
 
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/几何变换.bmp)
+
 填充
 
 ![img](..\Graphic\Graphic1.0\screenshot\填充.bmp)
+
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/填充.bmp)
 
 反色
 
 ![img](..\Graphic\Graphic1.0\screenshot\反色.bmp)
 
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/反色.bmp)
+
 平滑处理
 
 ![img](..\Graphic\Graphic1.0\screenshot\平滑处理.bmp)
 
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/平滑处理.bmp)
+
 图像锐化
 
 ![img](..\Graphic\Graphic1.0\screenshot\图像锐化.bmp)
+
+![img](https://github.com/HangyuanYang/SimpleMFCGraphics/raw/master/Graphic2.0/screenshot/图像锐化.bmp)
 
 ## 总结
 
@@ -424,6 +442,10 @@ password：
 >[2.  markdown绘图插件----mermaid简介](http://blog.csdn.net/wangyaninglm/article/details/52887045)
 >
 >[3. Gitbook mermaid](https://mermaidjs.github.io/)
+>
+>[4. Github上显示添加扩展](https://chrome.google.com/webstore/detail/chrome-diagrammer/bkpbgjmkomfoakfklcjeoegkklgjnnpk)
+>
+>[5.可能存在解决方案](https://news.ycombinator.com/item?id=13326065)
 
 
 
